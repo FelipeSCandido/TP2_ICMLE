@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import shlex
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
@@ -353,7 +354,9 @@ class RetailIntelligenceInterface:
                 if not user_input:
                     continue
 
-                parts = user_input.split()
+                parts = shlex.split(user_input)
+                if not parts:
+                    continue
                 cmd = parts[0].lower()
                 args = parts[1:]
 
