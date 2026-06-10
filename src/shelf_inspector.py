@@ -130,7 +130,7 @@ def inspect_image(
     image_path: str,
     zone_id: str = "Z_S1",
     strategy: str = "cot",  
-    model_name: str = "gemini-1.5-flash",
+    model_name: str = "gemini-2.5-flash",
     force_refresh: bool = False,
 ) -> dict:
     """Analisa uma imagem de prateleira."""

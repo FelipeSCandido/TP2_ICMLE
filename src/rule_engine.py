@@ -57,7 +57,7 @@ Notas:
 """
 
 
-def _call_gemini_text(prompt: str, model_name: str = "gemini-1.5-flash") -> str:
+def _call_gemini_text(prompt: str, model_name: str = "gemini-2.5-flash") -> str:
     from google import genai
 
     api_key = os.getenv("GEMINI_API_KEY")
