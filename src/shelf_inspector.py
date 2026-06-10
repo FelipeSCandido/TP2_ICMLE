@@ -1,9 +1,3 @@
-"""
-shelf_inspector.py — Componente 1 do TP2
-Analisa imagens de prateleiras com Gemini Flash usando 3 estratégias de prompting.
-Inclui cache local (MD5), rate limiting e fallback gracioso.
-"""
-
 import os
 import json
 import hashlib
@@ -16,7 +10,6 @@ from typing import Optional
 from dotenv import load_dotenv
 
 load_dotenv()
-# Garante que encontra o .env na raiz do projecto mesmo executando de src/
 _root = Path(__file__).resolve().parent.parent
 if (_root / ".env").exists():
     load_dotenv(_root / ".env", override=True)
@@ -24,13 +17,11 @@ if (_root / ".env").exists():
 CACHE_DIR = Path(os.getenv("CACHE_DIR", "./cache"))
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-# Localiza prompts/ de forma robusta independentemente do cwd
 _SRC_DIR = Path(__file__).resolve().parent
 PROMPTS_DIR = _SRC_DIR.parent / "prompts"
 if not PROMPTS_DIR.exists():
-    PROMPTS_DIR = _SRC_DIR.parent.parent / "prompts"  # fallback extra
+    PROMPTS_DIR = _SRC_DIR.parent.parent / "prompts" 
 
-# Zone descriptions importadas do zones.json
 ZONE_DESCRIPTIONS = {
     "Z_S1": "Secção de frescos e lacticínios",
     "Z_S2": "Secção de padaria e pastelaria",
@@ -43,7 +34,6 @@ ZONE_DESCRIPTIONS = {
 
 
 def _md5(path: Path) -> str:
-    """Calcula o hash MD5 de um ficheiro para cache."""
     h = hashlib.md5()
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):
@@ -91,7 +81,6 @@ def _extract_json(text: str) -> dict:
         return json.loads(text)
     except json.JSONDecodeError:
         pass
-    # Tenta extrair bloco JSON com regex
     match = re.search(r'\{[\s\S]*\}', text)
     if match:
         try:
@@ -104,7 +93,6 @@ def _extract_json(text: str) -> dict:
 def _call_gemini_with_backoff(client, model_name: str, prompt: str,
                                image_data: str, media_type: str,
                                max_retries: int = 4) -> str:
-    """Chama a API Gemini com backoff exponencial para erros 429."""
     import google.generativeai as genai
 
     model = genai.GenerativeModel(model_name)
@@ -137,7 +125,7 @@ def _call_gemini_with_backoff(client, model_name: str, prompt: str,
 def inspect_image(
     image_path: str,
     zone_id: str = "Z_S1",
-    strategy: str = "cot",  # "zero_shot" | "cot" | "few_shot"
+    strategy: str = "cot",  
     model_name: str = "gemini-1.5-flash",
     force_refresh: bool = False,
 ) -> dict:
@@ -166,7 +154,6 @@ def inspect_image(
     if not img_path.exists():
         raise FileNotFoundError(f"Imagem não encontrada: {image_path}")
 
-    # Verifica cache
     cache_file = _cache_path(img_path, strategy)
     if not force_refresh:
         cached = _load_from_cache(cache_file)
@@ -174,7 +161,6 @@ def inspect_image(
             print(f"[Cache] Resultado carregado do cache para {img_path.name} ({strategy})")
             return cached
 
-    # Prepara prompt
     prompt_files = {
         "zero_shot": "inspector_zero_shot.txt",
         "cot": "inspector_cot.txt",
@@ -196,7 +182,6 @@ def inspect_image(
               .replace("{{DATETIME}}", now.strftime("%Y%m%d_%H%M%S"))
               .replace("{{TIMESTAMP}}", timestamp))
 
-    # Codifica imagem
     image_data, media_type = _image_to_base64(img_path)
 
     print(f"[API] Chamando Gemini ({strategy}) para {img_path.name}...")
@@ -204,10 +189,8 @@ def inspect_image(
         None, model_name, prompt, image_data, media_type
     )
 
-    # Parse JSON
     result = _extract_json(raw_response)
 
-    # Garante campos obrigatórios
     result.setdefault("inspection_id", inspection_id)
     result.setdefault("timestamp", timestamp)
     result.setdefault("image_path", str(image_path))
@@ -220,7 +203,6 @@ def inspect_image(
     result["_strategy"] = strategy
     result["_model"] = model_name
 
-    # Guarda em cache e em disco
     _save_to_cache(cache_file, result)
 
     inspections_dir = Path(os.getenv("INSPECTIONS_DIR", "./data/inspections"))
@@ -237,7 +219,7 @@ def inspect_batch(
     zone_id: str = "Z_S1",
     strategy: str = "cot",
     extensions: tuple = (".jpg", ".jpeg", ".png", ".webp"),
-    delay_s: float = 4.5,  # ~13 req/min < limite de 15
+    delay_s: float = 4.5,  
 ) -> list[dict]:
     """
     Inspecciona todas as imagens numa directoria.
@@ -265,7 +247,6 @@ def inspect_batch(
             result = inspect_image(str(img_path), zone_id=zone_id, strategy=strategy)
             results.append(result)
         except RuntimeError as e:
-            # Quota esgotada — para e reporta
             print(f"[ERRO] {e}")
             print(f"[Batch] Interrompido em {i+1}/{len(images)} imagens. "
                   f"{len(results)} resultados guardados em cache.")
@@ -298,7 +279,6 @@ def compare_strategies(
         except Exception as e:
             results[s] = {"error": str(e)}
 
-    # Comparação resumida
     comparison = {
         "image": image_path,
         "zone_id": zone_id,
@@ -320,7 +300,6 @@ def compare_strategies(
     return comparison
 
 
-# --- CLI simples ---
 if __name__ == "__main__":
     import sys
 
