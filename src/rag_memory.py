@@ -1,19 +1,11 @@
-"""
-rag_memory.py — Componente 3 do TP2
-Sistema de memória RAG com ChromaDB e sentence-transformers.
-Indexa inspeções históricas e suporta queries em linguagem natural.
-Inclui integração opcional com dados de trajectória do Projecto 1.
-"""
-
 import os
 import json
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from dotenv import load_dotenv
 
 load_dotenv()
-# Garante que encontra o .env na raiz do projecto mesmo executando de src/
 _root = Path(__file__).resolve().parent.parent
 if (_root / ".env").exists():
     load_dotenv(_root / ".env", override=True)
@@ -23,28 +15,22 @@ INSPECTIONS_DIR = Path(os.getenv("INSPECTIONS_DIR", "./data/inspections"))
 P1_JOURNEYS_CSV = os.getenv("P1_JOURNEYS_CSV", "")
 P1_METRICS_JSON = os.getenv("P1_METRICS_JSON", "")
 
-# Modelo de embeddings multilingual (suporta português)
 EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-
-# Coleção ChromaDB
 COLLECTION_NAME = "shelf_inspections"
 
 
 def _get_chroma_client():
-    """Retorna cliente ChromaDB persistente."""
     import chromadb
     VECTORSTORE_DIR.mkdir(parents=True, exist_ok=True)
     return chromadb.PersistentClient(path=str(VECTORSTORE_DIR))
 
 
 def _get_embedding_model():
-    """Carrega modelo de embeddings (cached após primeira carga)."""
     from sentence_transformers import SentenceTransformer
     return SentenceTransformer(EMBEDDING_MODEL)
 
 
 def _get_collection():
-    """Retorna a coleção ChromaDB (cria se não existir)."""
     client = _get_chroma_client()
     return client.get_or_create_collection(
         name=COLLECTION_NAME,
@@ -56,11 +42,6 @@ def _build_summary(inspection: dict, p1_context: Optional[str] = None) -> str:
     """
     Gera um summary rico em termos semanticamente relevantes para indexação.
     O campo summary é o texto que vai ter embeddings.
-
-    Exemplo de bom summary:
-    "prateleira inferior da zona Z_S3 com fill rate de 72%, produto de limpeza
-    fora de posição na secção central, embalagem danificada detetada no lado direito,
-    terça-feira 15h."
     """
     zone = inspection.get("zone_id", "zona desconhecida")
     status = inspection.get("overall_status", "ok")
@@ -68,7 +49,6 @@ def _build_summary(inspection: dict, p1_context: Optional[str] = None) -> str:
     products = ", ".join(inspection.get("products_detected", []))
     ts = inspection.get("timestamp", "")
 
-    # Formata data e hora legível
     date_str = ""
     if ts:
         try:
@@ -79,7 +59,6 @@ def _build_summary(inspection: dict, p1_context: Optional[str] = None) -> str:
         except ValueError:
             date_str = ts[:10]
 
-    # Descreve issues
     issues_text = []
     for iss in inspection.get("issues", []):
         issues_text.append(
@@ -102,10 +81,6 @@ def _build_summary(inspection: dict, p1_context: Optional[str] = None) -> str:
 
 
 def _get_p1_context(zone_id: str, timestamp: str) -> Optional[str]:
-    """
-    Obtém contexto de afluência do Projecto 1 para uma zona e hora específicas.
-    Retorna None se os dados não estiverem disponíveis.
-    """
     if not P1_METRICS_JSON or not Path(P1_METRICS_JSON).exists():
         return None
     if not P1_JOURNEYS_CSV or not Path(P1_JOURNEYS_CSV).exists():
@@ -117,12 +92,10 @@ def _get_p1_context(zone_id: str, timestamp: str) -> Optional[str]:
         with open(P1_METRICS_JSON) as f:
             metrics = json.load(f)
 
-        # Verifica se a zona tem métricas
         zone_metrics = metrics.get("zone_metrics", {}).get(zone_id, {})
         if not zone_metrics:
             return None
 
-        # Obtém hora da inspeção
         hour = None
         if timestamp:
             try:
@@ -130,7 +103,6 @@ def _get_p1_context(zone_id: str, timestamp: str) -> Optional[str]:
             except (ValueError, IndexError):
                 pass
 
-        # Verifica anomalias na zona nessa hora
         anomalies = metrics.get("anomalies", [])
         zone_anomalies = [a for a in anomalies if a.get("zone") == zone_id]
 
@@ -159,16 +131,7 @@ def _get_p1_context(zone_id: str, timestamp: str) -> Optional[str]:
 
 
 def index_inspection(inspection: dict) -> str:
-    """
-    Indexa uma inspeção na vector store.
-
-    Estratégia de chunking: híbrida
-    - O summary da inspeção é o chunk principal (para queries semânticas)
-    - Metadados estruturados permitem filtragem pré-retrieval
-
-    Returns:
-        ID do documento indexado
-    """
+    """Indexa uma inspeção na vector store."""
     collection = _get_collection()
     model = _get_embedding_model()
 
@@ -176,16 +139,10 @@ def index_inspection(inspection: dict) -> str:
     zone_id = inspection.get("zone_id", "")
     timestamp = inspection.get("timestamp", "")
 
-    # Contexto do Projecto 1
     p1_context = _get_p1_context(zone_id, timestamp)
-
-    # Gera summary rico
     summary = _build_summary(inspection, p1_context)
-
-    # Embedding
     embedding = model.encode(summary).tolist()
 
-    # Metadados para filtragem pré-retrieval
     metadata = {
         "inspection_id": inspection_id,
         "zone_id": zone_id,
@@ -197,7 +154,6 @@ def index_inspection(inspection: dict) -> str:
         "has_p1_context": p1_context is not None,
     }
 
-    # Indexa na ChromaDB
     collection.upsert(
         ids=[inspection_id],
         embeddings=[embedding],
@@ -211,12 +167,6 @@ def index_inspection(inspection: dict) -> str:
 
 
 def index_all_inspections(inspections_dir: Optional[str] = None) -> int:
-    """
-    Indexa todas as inspeções guardadas em disco.
-
-    Returns:
-        Número de inspeções indexadas
-    """
     dir_path = Path(inspections_dir or INSPECTIONS_DIR)
     files = list(dir_path.glob("INS_*.json"))
     count = 0
@@ -240,30 +190,16 @@ def query(
     k: int = 3,
     zone_filter: Optional[str] = None,
 ) -> dict:
-    """
-    Query ao sistema de memória em linguagem natural.
-    Usa o LLM para sintetizar uma resposta com base nos documentos recuperados.
-
-    Args:
-        natural_language_query: Pergunta em linguagem natural
-        k: Número de documentos a recuperar
-        zone_filter: Filtrar por zona específica (e.g. "Z_S1")
-
-    Returns:
-        Dicionário com resposta e documentos fonte
-    """
+    """Query ao sistema de memória em linguagem natural com síntese via LLM."""
     collection = _get_collection()
     model = _get_embedding_model()
 
-    # Embedding da query
     query_embedding = model.encode(natural_language_query).tolist()
 
-    # Prepara filtro (where clause ChromaDB)
     where = None
     if zone_filter:
         where = {"zone_id": {"$eq": zone_filter}}
 
-    # Retrieval
     results = collection.query(
         query_embeddings=[query_embedding],
         n_results=min(k, collection.count()),
@@ -282,7 +218,6 @@ def query(
             "sources": []
         }
 
-    # Contexto aumentado para o LLM
     context_parts = []
     for i, (doc, meta, dist) in enumerate(zip(docs, metas, distances), 1):
         context_parts.append(
@@ -292,7 +227,6 @@ def query(
         )
     context = "\n\n".join(context_parts)
 
-    # Síntese com LLM
     synthesis_prompt = f"""Você é um assistente de gestão de loja de supermercado.
 Responde à seguinte pergunta com base exclusivamente nos registos históricos de inspeção fornecidos.
 Cita sempre os inspection_id relevantes na tua resposta.
@@ -338,16 +272,6 @@ def evaluate_recall_at_k(
     queries_with_ground_truth: list[dict],
     k: int = 3,
 ) -> dict:
-    """
-    Avalia Recall@k sobre um conjunto de queries com ground truth.
-
-    Args:
-        queries_with_ground_truth: Lista de {"query": str, "relevant_ids": [str]}
-        k: Número de documentos a recuperar
-
-    Returns:
-        Métricas de avaliação
-    """
     collection = _get_collection()
     model = _get_embedding_model()
 
@@ -389,7 +313,6 @@ def evaluate_recall_at_k(
     }
 
 
-# --- CLI simples ---
 if __name__ == "__main__":
     import sys
 

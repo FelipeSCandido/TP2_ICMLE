@@ -1,9 +1,3 @@
-"""
-interface.py — Componente 5 do TP2
-Interface conversacional CLI para o gestor de loja.
-Orquestra todos os outros componentes.
-"""
-
 import os
 import sys
 import json
@@ -11,11 +5,9 @@ from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Adiciona src ao path para imports
 sys.path.insert(0, str(Path(__file__).parent))
 
 load_dotenv()
-# Garante que encontra o .env na raiz do projecto mesmo executando de src/
 _root = Path(__file__).resolve().parent.parent
 if (_root / ".env").exists():
     load_dotenv(_root / ".env", override=True)
@@ -63,10 +55,6 @@ class RetailIntelligenceInterface:
             print(md)
 
     def cmd_inspect(self, args: list[str]):
-        """
-        inspect <ZONE_ID> --image <caminho>
-        inspect all --images-dir <directoria>
-        """
         from shelf_inspector import inspect_image, inspect_batch
         from rule_engine import execute_rules
         from rag_memory import index_inspection
@@ -78,7 +66,6 @@ class RetailIntelligenceInterface:
         zone = args[0]
 
         if zone == "all":
-            # Batch mode
             images_dir = None
             for i, a in enumerate(args):
                 if a == "--images-dir" and i + 1 < len(args):
@@ -98,9 +85,8 @@ class RetailIntelligenceInterface:
             self._print(f"[OK] {len(results)} imagens inspeccionadas.", "green")
 
         else:
-            # Imagem única
             image_path = None
-            strategy = "cot"  # default
+            strategy = "cot"
             for i, a in enumerate(args):
                 if a == "--image" and i + 1 < len(args):
                     image_path = args[i + 1]
@@ -117,14 +103,11 @@ class RetailIntelligenceInterface:
                 result = inspect_image(image_path, zone_id=zone, strategy=strategy)
                 self.session_inspections.append(result)
 
-                # Executa regras
                 notifs = execute_rules(result)
                 self.session_notifications.extend(notifs)
 
-                # Indexa no RAG
                 index_inspection(result)
 
-                # Mostra resumo
                 status = result.get("overall_status", "ok")
                 fill = result.get("shelf_fill_rate", 1.0)
                 n_issues = len(result.get("issues", []))
@@ -152,7 +135,6 @@ class RetailIntelligenceInterface:
                 self._print(f"[QUOTA] {e}", "yellow")
 
     def cmd_add_rule(self, args: list[str]):
-        """add rule \"<regra em português>\" """
         from rule_engine import add_rule
 
         if not args:
@@ -171,7 +153,6 @@ class RetailIntelligenceInterface:
             self._print(f"[ERRO] {e}", "red")
 
     def cmd_list_rules(self, args: list[str]):
-        """list rules"""
         from rule_engine import list_rules
 
         rules = list_rules()
@@ -195,7 +176,6 @@ class RetailIntelligenceInterface:
             self.console.print(table)
 
     def cmd_delete_rule(self, args: list[str]):
-        """delete rule <RULE_ID>"""
         from rule_engine import delete_rule
 
         if not args:
@@ -204,7 +184,6 @@ class RetailIntelligenceInterface:
         delete_rule(args[0])
 
     def cmd_test_rule(self, args: list[str]):
-        """test rule <RULE_ID> --image <caminho>"""
         from rule_engine import test_rule
         from shelf_inspector import inspect_image
 
@@ -228,14 +207,12 @@ class RetailIntelligenceInterface:
             self._print(f"[ERRO] {e}", "red")
 
     def cmd_history(self, args: list[str]):
-        """history \"<pergunta>\" [--zone Z_S1]"""
         from rag_memory import query
 
         if not args:
             self._print("[ERRO] Falta a pergunta.", "red")
             return
 
-        # Extrai zone filter se presente
         zone = None
         question_parts = []
         i = 0
@@ -264,7 +241,6 @@ class RetailIntelligenceInterface:
             self._print(f"[ERRO] {e}", "red")
 
     def cmd_compare(self, args: list[str]):
-        """compare <ZONE_A> <ZONE_B> [--period \"last 7 days\"]"""
         from rag_memory import query
 
         if len(args) < 2:
@@ -280,10 +256,6 @@ class RetailIntelligenceInterface:
             self._print(result["answer"])
 
     def cmd_report(self, args: list[str]):
-        """
-        report --session today
-        report --zone <ZONE_ID> [--period \"last 14 days\"]
-        """
         from report_generator import generate_inspection_report, generate_zone_report
         from rag_memory import query
 
@@ -305,14 +277,12 @@ class RetailIntelligenceInterface:
             period = 14
             for i, a in enumerate(args):
                 if a == "--period" and i + 1 < len(args):
-                    # Extrai número de dias do string "last N days"
                     import re
                     m = re.search(r'\d+', args[i + 1])
                     if m:
                         period = int(m.group())
             report = generate_zone_report(zone_id, period_days=period)
         else:
-            # Relatório da sessão actual
             rag = query("issues e anomalias recentes", k=5)
             report = generate_inspection_report(
                 inspections=self.session_inspections,
@@ -325,7 +295,6 @@ class RetailIntelligenceInterface:
         self._print_markdown(report)
 
     def cmd_rag_index(self, args: list[str]):
-        """rag index [--dir <directoria>]"""
         from rag_memory import index_all_inspections
 
         d = None

@@ -75,7 +75,6 @@ def _image_to_base64(image_path: Path) -> tuple[str, str]:
 
 def _extract_json(text: str) -> dict:
     """Extrai JSON da resposta do modelo (pode ter texto extra)."""
-    # Tenta parse directo
     text = text.strip()
     try:
         return json.loads(text)
@@ -131,16 +130,6 @@ def inspect_image(
 ) -> dict:
     """
     Analisa uma imagem de prateleira.
-
-    Args:
-        image_path: Caminho para a imagem
-        zone_id: ID da zona da loja (e.g. "Z_S3")
-        strategy: Estratégia de prompting ("zero_shot", "cot", "few_shot")
-        model_name: Modelo Gemini a usar
-        force_refresh: Ignora cache e força nova chamada à API
-
-    Returns:
-        Dicionário com o resultado da inspeção (schema inspection_record)
     """
     import google.generativeai as genai
 
@@ -223,16 +212,6 @@ def inspect_batch(
 ) -> list[dict]:
     """
     Inspecciona todas as imagens numa directoria.
-
-    Args:
-        images_dir: Directoria com imagens
-        zone_id: Zona da loja
-        strategy: Estratégia de prompting
-        extensions: Extensões de ficheiro a processar
-        delay_s: Delay entre chamadas (respeita rate limit de 15 req/min)
-
-    Returns:
-        Lista de resultados de inspeção
     """
     img_dir = Path(images_dir)
     images = [p for p in img_dir.iterdir() if p.suffix.lower() in extensions]
@@ -248,8 +227,7 @@ def inspect_batch(
             results.append(result)
         except RuntimeError as e:
             print(f"[ERRO] {e}")
-            print(f"[Batch] Interrompido em {i+1}/{len(images)} imagens. "
-                  f"{len(results)} resultados guardados em cache.")
+            print(f"[Batch] Interrompido em {i+1}/{len(images)} imagens. {len(results)} resultados guardados em cache.")
             break
         except Exception as e:
             print(f"[AVISO] Erro em {img_path.name}: {e}")
@@ -267,7 +245,6 @@ def compare_strategies(
 ) -> dict:
     """
     Executa as 3 estratégias na mesma imagem e compara os resultados.
-    Útil para o relatório técnico.
     """
     strategies = ["zero_shot", "cot", "few_shot"]
     results = {}

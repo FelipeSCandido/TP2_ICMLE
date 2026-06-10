@@ -1,18 +1,11 @@
-"""
-report_generator.py — Componente 4 do TP2
-Gera relatórios de inspeção em Markdown com contexto histórico do RAG
-e integração opcional com dados de trajectória do Projecto 1.
-"""
-
 import os
 import json
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from dotenv import load_dotenv
 
 load_dotenv()
-# Garante que encontra o .env na raiz do projecto mesmo executando de src/
 _root = Path(__file__).resolve().parent.parent
 if (_root / ".env").exists():
     load_dotenv(_root / ".env", override=True)
@@ -22,7 +15,6 @@ P1_INSIGHTS_JSON = os.getenv("P1_INSIGHTS_JSON", "")
 
 
 def _load_p1_data() -> tuple[Optional[dict], Optional[dict]]:
-    """Carrega dados do Projecto 1 se disponíveis."""
     metrics = None
     insights = None
 
@@ -56,7 +48,6 @@ def _format_severity_badge(severity: str) -> str:
 
 
 def _get_zone_p1_context(zone_id: str, metrics: Optional[dict]) -> Optional[str]:
-    """Extrai contexto de afluência do Projecto 1 para uma zona."""
     if not metrics:
         return None
 
@@ -74,14 +65,12 @@ def _get_zone_p1_context(zone_id: str, metrics: Optional[dict]) -> Optional[str]
         f"- **Stop rate:** {stop_rate:.1%}",
     ]
 
-    # Anomalias na zona
     anomalies = [a for a in metrics.get("anomalies", []) if a.get("zone") == zone_id]
     if anomalies:
         lines.append(f"- **Anomalias detectadas (Proj.1):** {len(anomalies)}")
         for a in anomalies[:3]:
             lines.append(
-                f"  - Às {a['hour']}h em {a['date']}: {a['actual']} visitantes "
-                f"(esperado {a['expected']:.1f}, {a['direction']})"
+                f"  - Às {a['hour']}h em {a['date']}: {a['actual']} visitantes (esperado {a['expected']:.1f}, {a['direction']})"
             )
 
     return "\n".join(lines)
@@ -95,24 +84,10 @@ def generate_inspection_report(
     rag_results: Optional[list[dict]] = None,
     output_path: Optional[str] = None,
 ) -> str:
-    """
-    Gera relatório Markdown para uma sessão de inspeção.
-
-    Args:
-        inspections: Lista de dicionários de inspeção (output do shelf_inspector)
-        session_name: Nome da sessão (para cabeçalho)
-        include_p1: Se True, integra dados do Projecto 1
-        notifications: Lista de notificações do rule_engine
-        rag_results: Resultados RAG relevantes para contexto histórico
-        output_path: Caminho para guardar o ficheiro .md (opcional)
-
-    Returns:
-        String com o relatório em Markdown
-    """
+    """Gera relatório Markdown para uma sessão de inspeção."""
     now = datetime.now()
     metrics, p1_insights = _load_p1_data() if include_p1 else (None, None)
 
-    # ── Estatísticas globais da sessão ─────────────────────────────────────
     n_zones = len(set(i.get("zone_id") for i in inspections))
     n_critical = sum(1 for i in inspections if i.get("overall_status") == "critical")
     n_warning = sum(1 for i in inspections if i.get("overall_status") == "warning")
@@ -122,10 +97,8 @@ def generate_inspection_report(
     avg_fill = sum(i.get("shelf_fill_rate", 0) for i in inspections) / max(len(inspections), 1)
     notifications = notifications or []
 
-    # ── Sumário executivo ──────────────────────────────────────────────────
     exec_summary_lines = [
-        f"Sessão **{session_name}** com **{len(inspections)} zona(s) inspeccionada(s)** "
-        f"({n_zones} distintas).",
+        f"Sessão **{session_name}** com **{len(inspections)} zona(s) inspeccionada(s)** ({n_zones} distintas).",
         f"**{n_critical} críticas**, **{n_warning} com avisos**, **{n_ok} sem problemas**.",
         f"Fill rate médio: **{avg_fill:.0%}**. Issues de alta severidade: **{n_issues_high}**.",
     ]
@@ -153,7 +126,6 @@ def generate_inspection_report(
         f"",
     ]
 
-    # ── Problemas por zona ──────────────────────────────────────────────────
     for insp in inspections:
         zone = insp.get("zone_id", "?")
         status = insp.get("overall_status", "ok")
@@ -176,53 +148,35 @@ def generate_inspection_report(
             lines.append("")
             for iss in issues:
                 lines += [
-                    f"- [{_format_severity_badge(iss.get('severity','low'))}] "
-                    f"**{iss.get('type','?')}** @ {iss.get('location','?')}",
+                    f"- [{_format_severity_badge(iss.get('severity','low'))}] **{iss.get('type','?')}** @ {iss.get('location','?')}",
                     f"  - {iss.get('description','')}",
-                    f"  - Confiança: {iss.get('confidence',0):.0%} | "
-                    f"Área afectada: {iss.get('affected_area_pct',0):.0%}",
+                    f"  - Confiança: {iss.get('confidence',0):.0%} | Área afectada: {iss.get('affected_area_pct',0):.0%}",
                     f"",
                 ]
         else:
             lines.append("_Sem issues detectados._")
             lines.append("")
 
-        # Contexto histórico do RAG para esta zona
         if rag_results:
             zone_rag = [r for r in rag_results if r.get("zone_id") == zone]
             if zone_rag:
                 lines.append("**Histórico (RAG):**")
                 for r in zone_rag[:2]:
-                    lines.append(
-                        f"- `{r.get('inspection_id')}` ({r.get('timestamp','')}): "
-                        f"{r.get('summary','')[:100]}..."
-                    )
+                    lines.append(f"- `{r.get('inspection_id')}` ({r.get('timestamp','')}): {r.get('summary','')[:100]}...")
                 lines.append("")
 
-        # Contexto Projecto 1
         if include_p1 and metrics:
             p1_ctx = _get_zone_p1_context(zone, metrics)
             if p1_ctx:
-                lines += [
-                    "**Afluência (Projecto 1):**",
-                    "",
-                    p1_ctx,
-                    "",
-                ]
+                lines += ["**Afluência (Projecto 1):**", "", p1_ctx, ""]
 
         lines.append("---")
         lines.append("")
 
-    # ── Regras disparadas ──────────────────────────────────────────────────
-    lines += [
-        "## 3. Regras Disparadas",
-        "",
-    ]
+    lines += ["## 3. Regras Disparadas", ""]
     if notifications:
         for notif in notifications:
-            level_icon = {"info": "ℹ", "warning": "⚠️", "critical": "🚨"}.get(
-                notif.get("alert_level", "info"), "ℹ"
-            )
+            level_icon = {"info": "ℹ", "warning": "⚠️", "critical": "🚨"}.get(notif.get("alert_level", "info"), "ℹ")
             lines += [
                 f"### {level_icon} {notif.get('rule_id')} — {notif.get('rule_description','')}",
                 f"",
@@ -235,31 +189,19 @@ def generate_inspection_report(
     else:
         lines += ["_Nenhuma regra disparou nesta sessão._", ""]
 
-    # ── Contexto histórico do RAG ──────────────────────────────────────────
-    lines += [
-        "## 4. Contexto Histórico (RAG)",
-        "",
-    ]
+    lines += ["## 4. Contexto Histórico (RAG)", ""]
     if rag_results:
         for r in rag_results[:5]:
             lines += [
-                f"- **`{r.get('inspection_id')}`** ({r.get('zone_id')}, "
-                f"{r.get('timestamp','')}, sim={r.get('similarity',0):.2f})",
+                f"- **`{r.get('inspection_id')}`** ({r.get('zone_id')}, {r.get('timestamp','')}, sim={r.get('similarity',0):.2f})",
                 f"  {r.get('summary','')[:150]}",
                 f"",
             ]
     else:
         lines += ["_Sem histórico relevante recuperado._", ""]
 
-    # ── Recomendações ──────────────────────────────────────────────────────
-    lines += [
-        "## 5. Recomendações",
-        "",
-        "_Ordenadas por urgência:_",
-        "",
-    ]
+    lines += ["## 5. Recomendações", "", "_Ordenadas por urgência:_", ""]
 
-    # Reúne todas as recomendações a partir dos issues de alta severidade
     recommendations = []
     for insp in inspections:
         zone = insp.get("zone_id", "?")
@@ -275,7 +217,6 @@ def generate_inspection_report(
                 "description": iss.get("description", ""),
             })
 
-    # Adiciona notificações críticas
     for notif in notifications:
         if notif.get("alert_level") == "critical":
             recommendations.insert(0, {
@@ -291,21 +232,15 @@ def generate_inspection_report(
 
     for i, rec in enumerate(recommendations[:5], 1):
         sev_badge = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(rec["severity"], "")
-        lines.append(
-            f"{i}. {sev_badge} **[{rec['zone']}]** {rec['type']} @ {rec['location']}"
-        )
+        lines.append(f"{i}. {sev_badge} **[{rec['zone']}]** {rec['type']} @ {rec['location']}")
         lines.append(f"   {rec['description']}")
         lines.append("")
 
     if not recommendations:
         lines += ["_Sem recomendações urgentes._", ""]
 
-    # ── Integração com Projecto 1 ──────────────────────────────────────────
     if include_p1 and (metrics or p1_insights):
-        lines += [
-            "## 6. Integração com Projecto 1",
-            "",
-        ]
+        lines += ["## 6. Integração com Projecto 1", ""]
         if metrics:
             traffic = metrics.get("traffic", {})
             lines += [
@@ -331,34 +266,22 @@ def generate_inspection_report(
                         "",
                     ]
 
-        # Correlação entre issues visuais e anomalias de tráfego
         if metrics:
             anomalies = metrics.get("anomalies", [])
             zones_with_issues = {i.get("zone_id") for i in inspections if i.get("issues")}
             correlated = [a for a in anomalies if a.get("zone") in zones_with_issues]
             if correlated:
-                lines += [
-                    "**Correlação: zonas com issues visuais e anomalias de afluência:**",
-                    "",
-                ]
+                lines += ["**Correlação: zonas com issues visuais e anomalias de afluência:**", ""]
                 for a in correlated[:3]:
                     lines.append(
                         f"- **{a['zone']}** às {a['hour']}h: {a['actual']} visitantes "
-                        f"({a['direction']} do esperado {a['expected']:.1f}) — "
-                        f"pode justificar issues de prateleira."
+                        f"({a['direction']} do esperado {a['expected']:.1f}) — pode justificar issues de prateleira."
                     )
                 lines.append("")
 
-    # ── Footer ──────────────────────────────────────────────────────────────
-    lines += [
-        "---",
-        "",
-        "*Relatório gerado automaticamente pelo sistema de Retail Vision Intelligence (TP2).*",
-    ]
-
+    lines += ["---", "", "*Relatório gerado automaticamente pelo sistema de Retail Vision Intelligence (TP2).*"]
     report_md = "\n".join(lines)
 
-    # Guarda se pedido
     if output_path:
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
@@ -373,9 +296,6 @@ def generate_zone_report(
     period_days: int = 14,
     inspections_dir: Optional[str] = None,
 ) -> str:
-    """
-    Gera relatório focado numa zona específica para um período.
-    """
     from rag_memory import query
 
     dir_path = Path(inspections_dir or os.getenv("INSPECTIONS_DIR", "./data/inspections"))
@@ -391,7 +311,6 @@ def generate_zone_report(
         except Exception:
             pass
 
-    # Query RAG para contexto histórico
     rag = query(f"problemas históricos na zona {zone_id}", k=5, zone_filter=zone_id)
 
     return generate_inspection_report(
@@ -401,7 +320,6 @@ def generate_zone_report(
     )
 
 
-# --- CLI simples ---
 if __name__ == "__main__":
     import sys
 

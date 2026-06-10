@@ -1,9 +1,3 @@
-"""
-rule_engine.py — Componente 2 do TP2
-Converte regras em linguagem natural para JSON estruturado.
-Executa regras sobre resultados de inspeção e gera notificações.
-"""
-
 import os
 import json
 import re
@@ -13,7 +7,6 @@ from typing import Optional
 from dotenv import load_dotenv
 
 load_dotenv()
-# Garante que encontra o .env na raiz do projecto mesmo executando de src/
 _root = Path(__file__).resolve().parent.parent
 if (_root / ".env").exists():
     load_dotenv(_root / ".env", override=True)
@@ -65,7 +58,6 @@ Notas:
 
 
 def _call_gemini_text(prompt: str, model_name: str = "gemini-1.5-flash") -> str:
-    """Chamada simples à API Gemini para texto."""
     import google.generativeai as genai
     import time
 
@@ -113,14 +105,7 @@ def _save_rule(rule: dict):
 
 
 def add_rule(natural_language: str, interactive: bool = True) -> dict:
-    """
-    Converte texto em linguagem natural para uma regra estruturada.
-    Se interactive=True, pede confirmação ao utilizador quando há ambiguidades.
-
-    Returns:
-        Dicionário com a regra convertida
-    """
-    # Gera ID único
+    """Converte texto em linguagem natural para uma regra estruturada."""
     existing = _load_all_rules()
     rule_id = f"RULE_{len(existing) + 1:03d}"
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -134,7 +119,6 @@ def add_rule(natural_language: str, interactive: bool = True) -> dict:
     raw = _call_gemini_text(prompt)
     rule = _extract_json(raw)
 
-    # Garante campos mínimos
     rule.setdefault("rule_id", rule_id)
     rule.setdefault("created_at", timestamp)
     rule.setdefault("natural_language", natural_language)
@@ -143,7 +127,6 @@ def add_rule(natural_language: str, interactive: bool = True) -> dict:
     ambiguities = rule.get("validation", {}).get("ambiguities", [])
     assumptions = rule.get("validation", {}).get("assumptions", [])
 
-    # Mostra ao utilizador
     print(f"\n{'='*50}")
     print(f"Regra convertida: {rule.get('description', '')}")
     if assumptions:
@@ -168,7 +151,6 @@ def add_rule(natural_language: str, interactive: bool = True) -> dict:
 
 
 def list_rules() -> list[dict]:
-    """Lista todas as regras guardadas."""
     rules = _load_all_rules()
     if not rules:
         print("Sem regras definidas.")
@@ -177,13 +159,11 @@ def list_rules() -> list[dict]:
         status = "✓" if r.get("validation", {}).get("is_valid", True) else "✗"
         print(f"[{status}] {r['rule_id']} — {r.get('description', r.get('natural_language', ''))}")
         conds = r.get("conditions", {})
-        print(f"      Zonas: {conds.get('zone_filter') or 'todas'} | "
-              f"Alert: {r.get('action', {}).get('alert_level', '?')}")
+        print(f"      Zonas: {conds.get('zone_filter') or 'todas'} | Alert: {r.get('action', {}).get('alert_level', '?')}")
     return rules
 
 
 def delete_rule(rule_id: str) -> bool:
-    """Remove uma regra pelo ID."""
     path = RULES_DIR / f"{rule_id}.json"
     if path.exists():
         path.unlink()
@@ -194,27 +174,19 @@ def delete_rule(rule_id: str) -> bool:
 
 
 def _rule_matches(rule: dict, inspection: dict) -> tuple[bool, list[dict]]:
-    """
-    Verifica se uma regra dispara face a um resultado de inspeção.
-
-    Returns:
-        (disparou, lista_de_issues_que_causaram_disparo)
-    """
     conditions = rule.get("conditions", {})
     triggered_issues = []
 
-    # Filtro de zona
     zone_filter = conditions.get("zone_filter", [])
     if zone_filter and inspection.get("zone_id") not in zone_filter:
         return False, []
 
-    # Filtro de hora (se a inspeção tiver timestamp)
     time_filter = conditions.get("time_filter", {})
     if time_filter and time_filter.get("hours_start") is not None:
         ts = inspection.get("timestamp", "")
         if ts:
             try:
-                hour = int(ts[11:13])  # "YYYY-MM-DDTHH:MM:SSZ"
+                hour = int(ts[11:13])
                 h_start = time_filter["hours_start"]
                 h_end = time_filter.get("hours_end", 23)
                 if not (h_start <= hour <= h_end):
@@ -222,13 +194,11 @@ def _rule_matches(rule: dict, inspection: dict) -> tuple[bool, list[dict]]:
             except (ValueError, IndexError):
                 pass
 
-    # Filtro de fill rate
     fill_threshold = conditions.get("fill_rate_threshold")
     if fill_threshold is not None:
         if inspection.get("shelf_fill_rate", 1.0) >= fill_threshold:
             return False, []
 
-    # Verifica issues individuais
     issue_types = conditions.get("issue_types", [])
     severity_map = {"low": 0, "medium": 1, "high": 2}
     sev_threshold = severity_map.get(conditions.get("severity_threshold", "low"), 0)
@@ -240,21 +210,17 @@ def _rule_matches(rule: dict, inspection: dict) -> tuple[bool, list[dict]]:
         return False, []
 
     for issue in issues:
-        # Tipo de issue
         if issue_types and issue.get("type") not in issue_types:
             continue
-        # Severidade
         issue_sev = severity_map.get(issue.get("severity", "low"), 0)
         if issue_sev < sev_threshold:
             continue
-        # Localização
         if location_filter and location_filter != "any":
             loc = issue.get("location", "").lower()
             if location_filter not in loc:
                 continue
         triggered_issues.append(issue)
 
-    # Se fill_rate disparou sem issues específicos
     if fill_threshold is not None and inspection.get("shelf_fill_rate", 1.0) < fill_threshold:
         if not triggered_issues:
             triggered_issues = [{"type": "fill_rate", "description": "Fill rate abaixo do limiar"}]
@@ -263,12 +229,7 @@ def _rule_matches(rule: dict, inspection: dict) -> tuple[bool, list[dict]]:
 
 
 def execute_rules(inspection: dict) -> list[dict]:
-    """
-    Executa todas as regras sobre um resultado de inspeção.
-
-    Returns:
-        Lista de notificações geradas
-    """
+    """Executa as regras ativas sobre uma inspeção e gera notificações."""
     rules = _load_all_rules()
     notifications = []
 
@@ -284,7 +245,6 @@ def execute_rules(inspection: dict) -> list[dict]:
             action = rule.get("action", {})
             msg_template = action.get("notification_message", "Regra {rule_id} disparou.")
 
-            # Preenche template com dados da inspeção
             notification_msg = (msg_template
                                 .replace("{rule_id}", rule.get("rule_id", ""))
                                 .replace("{zone_id}", inspection.get("zone_id", ""))
@@ -313,9 +273,6 @@ def execute_rules(inspection: dict) -> list[dict]:
 
 
 def test_rule(rule_id: str, inspection: dict) -> dict:
-    """
-    Testa uma regra específica sobre uma inspeção (sem guardar notificações).
-    """
     path = RULES_DIR / f"{rule_id}.json"
     if not path.exists():
         raise FileNotFoundError(f"Regra {rule_id} não encontrada.")
@@ -331,7 +288,6 @@ def test_rule(rule_id: str, inspection: dict) -> dict:
     }
 
 
-# --- CLI simples ---
 if __name__ == "__main__":
     import sys
 
