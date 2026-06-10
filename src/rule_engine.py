@@ -58,18 +58,20 @@ Notas:
 
 
 def _call_gemini_text(prompt: str, model_name: str = "gemini-1.5-flash") -> str:
-    import google.generativeai as genai
-    import time
+    from google import genai
 
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY não definida.")
-    genai.configure(api_key=api_key)
+    
+    client = genai.Client(api_key=api_key)
 
-    model = genai.GenerativeModel(model_name)
     for attempt in range(4):
         try:
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+            )
             return response.text
         except Exception as e:
             if "429" in str(e) and attempt < 3:
@@ -105,7 +107,6 @@ def _save_rule(rule: dict):
 
 
 def add_rule(natural_language: str, interactive: bool = True) -> dict:
-    """Converte texto em linguagem natural para uma regra estruturada."""
     existing = _load_all_rules()
     rule_id = f"RULE_{len(existing) + 1:03d}"
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -229,7 +230,6 @@ def _rule_matches(rule: dict, inspection: dict) -> tuple[bool, list[dict]]:
 
 
 def execute_rules(inspection: dict) -> list[dict]:
-    """Executa as regras ativas sobre uma inspeção e gera notificações."""
     rules = _load_all_rules()
     notifications = []
 

@@ -63,7 +63,6 @@ def _load_prompt(filename: str) -> str:
 
 
 def _image_to_base64(image_path: Path) -> tuple[str, str]:
-    """Converte imagem para base64 e detecta o media_type."""
     suffix = image_path.suffix.lower()
     media_map = {".jpg": "image/jpeg", ".jpeg": "image/jpeg",
                  ".png": "image/png", ".webp": "image/webp"}
@@ -74,7 +73,6 @@ def _image_to_base64(image_path: Path) -> tuple[str, str]:
 
 
 def _extract_json(text: str) -> dict:
-    """Extrai JSON da resposta do modelo (pode ter texto extra)."""
     text = text.strip()
     try:
         return json.loads(text)
@@ -92,19 +90,26 @@ def _extract_json(text: str) -> dict:
 def _call_gemini_with_backoff(client, model_name: str, prompt: str,
                                image_data: str, media_type: str,
                                max_retries: int = 4) -> str:
-    import google.generativeai as genai
+    from google import genai
+    from google.genai import types
 
-    model = genai.GenerativeModel(model_name)
+    if client is None:
+        client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
     contents = [
-        {"parts": [
-            {"inline_data": {"mime_type": media_type, "data": image_data}},
-            {"text": prompt}
-        ]}
+        types.Part.from_bytes(
+            data=base64.b64decode(image_data),
+            mime_type=media_type
+        ),
+        prompt
     ]
 
     for attempt in range(max_retries):
         try:
-            response = model.generate_content(contents)
+            response = client.models.generate_content(
+                model=model_name,
+                contents=contents
+            )
             return response.text
         except Exception as e:
             err_str = str(e)
@@ -128,16 +133,14 @@ def inspect_image(
     model_name: str = "gemini-1.5-flash",
     force_refresh: bool = False,
 ) -> dict:
-    """
-    Analisa uma imagem de prateleira.
-    """
-    import google.generativeai as genai
+    """Analisa uma imagem de prateleira."""
+    from google import genai
 
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY não definida. Copia .env.example para .env e preenche.")
 
-    genai.configure(api_key=api_key)
+    client = genai.Client(api_key=api_key)
 
     img_path = Path(image_path)
     if not img_path.exists():
@@ -175,7 +178,7 @@ def inspect_image(
 
     print(f"[API] Chamando Gemini ({strategy}) para {img_path.name}...")
     raw_response = _call_gemini_with_backoff(
-        None, model_name, prompt, image_data, media_type
+        client, model_name, prompt, image_data, media_type
     )
 
     result = _extract_json(raw_response)
@@ -210,9 +213,6 @@ def inspect_batch(
     extensions: tuple = (".jpg", ".jpeg", ".png", ".webp"),
     delay_s: float = 4.5,  
 ) -> list[dict]:
-    """
-    Inspecciona todas as imagens numa directoria.
-    """
     img_dir = Path(images_dir)
     images = [p for p in img_dir.iterdir() if p.suffix.lower() in extensions]
     images.sort()
@@ -227,7 +227,6 @@ def inspect_batch(
             results.append(result)
         except RuntimeError as e:
             print(f"[ERRO] {e}")
-            print(f"[Batch] Interrompido em {i+1}/{len(images)} imagens. {len(results)} resultados guardados em cache.")
             break
         except Exception as e:
             print(f"[AVISO] Erro em {img_path.name}: {e}")
@@ -243,9 +242,6 @@ def compare_strategies(
     image_path: str,
     zone_id: str = "Z_S1",
 ) -> dict:
-    """
-    Executa as 3 estratégias na mesma imagem e compara os resultados.
-    """
     strategies = ["zero_shot", "cot", "few_shot"]
     results = {}
 
