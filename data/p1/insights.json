@@ -1,0 +1,118 @@
+{
+  "metadata": {
+    "generated_at": "2026-05-19 19:03:11",
+    "model": "qwen2.5:3b",
+    "temperature": 0.3,
+    "strategies_run": [
+      "A",
+      "B"
+    ]
+  },
+  "zero_shot": {
+    "insights": [
+      {
+        "id": "INS_001",
+        "categoria": "trafego",
+        "titulo": "Visitas diárias variaram significativamente entre os dias da semana",
+        "observacao": "A média diária de visitantes na loja foi de 1424 (Z_S3) no dia 10 de março até 1896 (Z_N5) no dia 16 de março, com uma variação de mais de 40%.",
+        "implicacao": "O fluxo de clientes é menos forte nas sextas-feiras e sábados, o que pode influenciar as vendas.",
+        "recomendacao": "Aumentar a promoção durante esses dias para atrair mais visitantes",
+        "urgencia": "esta_semana",
+        "confianca": 1.0
+      },
+      {
+        "id": "INS_002",
+        "categoria": "anomalia",
+        "titulo": "Z_N4 apresentou uma alta frequência de entradas no horário da tarde",
+        "observacao": "No dia 16 de março, Z_N4 registou 39 entradas (acima do esperado de 2.4) às 19h00, um aumento de mais de 150% em comparação com o valor normal.",
+        "implicacao": "Esta alta frequência pode indicar uma tendência crescente ou uma promoção recente que está a ter efeito.",
+        "recomendacao": "Investigar as razões para este comportamento abusivo e tomar medidas preventivas",
+        "urgencia": "imediata",
+        "confianca": 1.0
+      }
+    ],
+    "resumo_executivo": [
+      "- A média diária de visitantes variou significativamente entre os dias da semana, com maiores números nas sextas-feiras e sábados.",
+      "- Z_N4 registou uma alta frequência de entradas no horário da tarde, o que pode indicar uma promoção recente ou um comportamento abusivo."
+    ],
+    "evaluation": {
+      "specificity": 1.0,
+      "actionability": 0.6,
+      "overall": 0.8
+    }
+  },
+  "few_shot": {
+    "insights": [
+      {
+        "id": "INS_001",
+        "categoria": "trafego",
+        "titulo": "Z_S3 teve visitantes acima da média na quinta-feira (847, +31%)",
+        "observacao": "A zona Z_S3 registou 847 visitantes na quinta-feira (2025-03-16), 31% acima da média semanal de 642 visitantes.",
+        "implicacao": "Esta variação pode indicar um aumento no interesse por produtos ou promoções nesta zona específica.",
+        "recomendacao": "Realizar uma análise mais aprofundada para identificar possíveis fatores que contribuíram para este aumento de tráfego.",
+        "urgencia": "esta_semana",
+        "confianca": 1.0
+      },
+      {
+        "id": "INS_002",
+        "categoria": "anomalia",
+        "titulo": "Z_N4 registou visitantes abaixo da expectativa no horário do pico (6 visitantes, -50%)",
+        "observacao": "A zona Z_N4 teve 6 visitantes na sexta-feira às 21h, significativamente abaixo da média semanal de 13 visitantes.",
+        "implicacao": "Este comportamento pode indicar uma obstrução no corredor ou problemas com a iluminação que estão a afetar o tráfego na zona.",
+        "recomendacao": "Implementar medidas para garantir que a zona está livre de obstáculos e verificar se há problemas de iluminação.",
+        "urgencia": "imediata",
+        "confianca": 1.0
+      }
+    ],
+    "resumo_executivo": [
+      "- A zona Z_S3 registou visitantes acima da média na quinta-feira (2025-03-16), indicando uma tendência positiva.",
+      "- A zona Z_N4 registou visitantes abaixo da expectativa no horário do pico, sugerindo a necessidade de investigar possíveis causas."
+    ],
+    "evaluation": {
+      "specificity": 1.0,
+      "actionability": 0.8,
+      "overall": 0.9
+    }
+  },
+  "comparison": {
+    "winner": "B (Few-shot)",
+    "zero_shot_scores": {
+      "specificity": 1.0,
+      "actionability": 0.6,
+      "overall": 0.8
+    },
+    "few_shot_scores": {
+      "specificity": 1.0,
+      "actionability": 0.8,
+      "overall": 0.9
+    },
+    "delta_specificity": 0.0,
+    "delta_actionability": 0.2
+  },
+  "insights": [
+    {
+      "id": "INS_001",
+      "categoria": "trafego",
+      "titulo": "Z_S3 teve visitantes acima da média na quinta-feira (847, +31%)",
+      "observacao": "A zona Z_S3 registou 847 visitantes na quinta-feira (2025-03-16), 31% acima da média semanal de 642 visitantes.",
+      "implicacao": "Esta variação pode indicar um aumento no interesse por produtos ou promoções nesta zona específica.",
+      "recomendacao": "Realizar uma análise mais aprofundada para identificar possíveis fatores que contribuíram para este aumento de tráfego.",
+      "urgencia": "esta_semana",
+      "confianca": 1.0
+    },
+    {
+      "id": "INS_002",
+      "categoria": "anomalia",
+      "titulo": "Z_N4 registou visitantes abaixo da expectativa no horário do pico (6 visitantes, -50%)",
+      "observacao": "A zona Z_N4 teve 6 visitantes na sexta-feira às 21h, significativamente abaixo da média semanal de 13 visitantes.",
+      "implicacao": "Este comportamento pode indicar uma obstrução no corredor ou problemas com a iluminação que estão a afetar o tráfego na zona.",
+      "recomendacao": "Implementar medidas para garantir que a zona está livre de obstáculos e verificar se há problemas de iluminação.",
+      "urgencia": "imediata",
+      "confianca": 1.0
+    }
+  ],
+  "resumo_executivo": [
+    "- A zona Z_S3 registou visitantes acima da média na quinta-feira (2025-03-16), indicando uma tendência positiva.",
+    "- A zona Z_N4 registou visitantes abaixo da expectativa no horário do pico, sugerindo a necessidade de investigar possíveis causas."
+  ]
+}

@@ -1,0 +1,7 @@
+.env
+cache/
+vectorstore/
+__pycache__/
+*.pyc
+data/images/
+data/inspections/

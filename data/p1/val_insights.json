@@ -1,0 +1,118 @@
+{
+  "metadata": {
+    "generated_at": "2026-05-19 19:05:07",
+    "model": "qwen2.5:3b",
+    "temperature": 0.0,
+    "strategies_run": [
+      "A",
+      "B"
+    ]
+  },
+  "zero_shot": {
+    "insights": [
+      {
+        "id": "INS_001",
+        "categoria": "trafego",
+        "titulo": "Visitas diárias variaram significativamente entre os dias da semana",
+        "observacao": "A média diária de visitantes foi de 1558 para o dia mais movimentado (2025-03-15) e 1424 para o dia menos movimentado (2025-03-11).",
+        "implicacao": "O fluxo de clientes é desigual ao longo da semana, com uma queda significativa no sábado.",
+        "recomendacao": "Implementar estratégias de marketing focadas em dias de baixa procura para aumentar o tráfego nos fins de semana.",
+        "urgencia": "esta_semana",
+        "confianca": 1.0
+      },
+      {
+        "id": "INS_002",
+        "categoria": "anomalia",
+        "titulo": "Zona Z_N4 registou visitas acima do esperado em horário de picoletos",
+        "observacao": "Na zona Z_N4, as visitas no horário de 19:00 (21h) foram 6, significativamente acima da média esperada de 2.4.",
+        "implicacao": "O aumento nas visitas pode indicar uma promoção ou evento que não foi previsto.",
+        "recomendacao": "Investigar e confirmar a origem das visitas acima do esperado para aproveitar o sucesso semelhante no futuro.",
+        "urgencia": "imediata",
+        "confianca": 1.0
+      }
+    ],
+    "resumo_executivo": [
+      "- A média diária de visitantes foi de 1558 para o dia mais movimentado (2025-03-15) e 1424 para o dia menos movimentado (2025-03-11).",
+      "- Na zona Z_N4, as visitas no horário de 19:00 foram 6, significativamente acima da média esperada de 2.4."
+    ],
+    "evaluation": {
+      "specificity": 0.75,
+      "actionability": 0.6,
+      "overall": 0.68
+    }
+  },
+  "few_shot": {
+    "insights": [
+      {
+        "id": "INS_001",
+        "categoria": "trafego",
+        "titulo": "A zona Z_S3 teve 847 visitantes na quinta-feira, 31% acima da média semanal.",
+        "observacao": "Z_S3 total_entries: 1471, média semanal total_entries: 1056",
+        "implicacao": "A zona Z_S3 teve um tráfego significativamente maior do que o esperado na quinta-feira da semana analisada.",
+        "recomendacao": "Realizar uma verificação adicional para entender a causa deste aumento de tráfego em Z_S3.",
+        "urgencia": "esta_semana",
+        "confianca": 1.0
+      },
+      {
+        "id": "INS_002",
+        "categoria": "anomalia",
+        "titulo": "No domingo às 16h, Z_N4 teve 0 visitantes contra uma média de 23 - possível obstrução de corredor.",
+        "observacao": "Z_N4 total_entries: 1558, média semanal total_entries: 23",
+        "implicacao": "A zona Z_N4 registou um tráfego zero naquela hora específica, indicando uma obstrução potencial de corredor.",
+        "recomendacao": "Realizar uma verificação imediata para garantir que o corredor está livre e não está causando bloqueios ao cliente.",
+        "urgencia": "imediatamente",
+        "confianca": 1.0
+      }
+    ],
+    "resumo_executivo": [
+      "- A zona Z_S3 teve um tráfego significativamente maior do que o esperado na quinta-feira da semana analisada.",
+      "- No domingo às 16h, a zona Z_N4 registou um tráfego zero, indicando uma possível obstrução de corredor."
+    ],
+    "evaluation": {
+      "specificity": 1.0,
+      "actionability": 0.6,
+      "overall": 0.8
+    }
+  },
+  "comparison": {
+    "winner": "B (Few-shot)",
+    "zero_shot_scores": {
+      "specificity": 0.75,
+      "actionability": 0.6,
+      "overall": 0.68
+    },
+    "few_shot_scores": {
+      "specificity": 1.0,
+      "actionability": 0.6,
+      "overall": 0.8
+    },
+    "delta_specificity": 0.25,
+    "delta_actionability": 0.0
+  },
+  "insights": [
+    {
+      "id": "INS_001",
+      "categoria": "trafego",
+      "titulo": "A zona Z_S3 teve 847 visitantes na quinta-feira, 31% acima da média semanal.",
+      "observacao": "Z_S3 total_entries: 1471, média semanal total_entries: 1056",
+      "implicacao": "A zona Z_S3 teve um tráfego significativamente maior do que o esperado na quinta-feira da semana analisada.",
+      "recomendacao": "Realizar uma verificação adicional para entender a causa deste aumento de tráfego em Z_S3.",
+      "urgencia": "esta_semana",
+      "confianca": 1.0
+    },
+    {
+      "id": "INS_002",
+      "categoria": "anomalia",
+      "titulo": "No domingo às 16h, Z_N4 teve 0 visitantes contra uma média de 23 - possível obstrução de corredor.",
+      "observacao": "Z_N4 total_entries: 1558, média semanal total_entries: 23",
+      "implicacao": "A zona Z_N4 registou um tráfego zero naquela hora específica, indicando uma obstrução potencial de corredor.",
+      "recomendacao": "Realizar uma verificação imediata para garantir que o corredor está livre e não está causando bloqueios ao cliente.",
+      "urgencia": "imediatamente",
+      "confianca": 1.0
+    }
+  ],
+  "resumo_executivo": [
+    "- A zona Z_S3 teve um tráfego significativamente maior do que o esperado na quinta-feira da semana analisada.",
+    "- No domingo às 16h, a zona Z_N4 registou um tráfego zero, indicando uma possível obstrução de corredor."
+  ]
+}

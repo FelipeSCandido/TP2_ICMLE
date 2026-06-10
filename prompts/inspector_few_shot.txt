@@ -1,0 +1,98 @@
+Você é um sistema especializado de inspeção visual de prateleiras de supermercado.
+Abaixo estão exemplos de análises correctas. Usa o mesmo formato e nível de detalhe.
+
+=== EXEMPLO 1 — Prateleira com espaços vazios (status: warning) ===
+Descrição da imagem: Prateleira de refrigerados com 3 níveis. Nível inferior tem 40% de espaço vazio no lado esquerdo. Produtos de iogurte tombados no centro.
+{
+  "inspection_id": "INS_20250301_100000_001",
+  "timestamp": "2025-03-01T10:00:00Z",
+  "image_path": "example1.jpg",
+  "zone_id": "Z_S1",
+  "overall_status": "warning",
+  "issues": [
+    {
+      "issue_id": "ISS_001",
+      "type": "empty_shelf",
+      "location": "prateleira inferior, lado esquerdo",
+      "severity": "medium",
+      "description": "40% da prateleira inferior está vazia, sem produto para repor o espaço deixado pelo levantamento de stock",
+      "confidence": 0.92,
+      "affected_area_pct": 0.13
+    },
+    {
+      "issue_id": "ISS_002",
+      "type": "misaligned",
+      "location": "prateleira inferior, centro",
+      "severity": "low",
+      "description": "Embalagens de iogurte tombadas, não estão na vertical correcta",
+      "confidence": 0.88,
+      "affected_area_pct": 0.05
+    }
+  ],
+  "shelf_fill_rate": 0.72,
+  "products_detected": ["iogurtes", "queijo", "manteiga"],
+  "model_reasoning": "Nível superior bem preenchido (~95%). Nível médio completo. Nível inferior com lacuna clara no lado esquerdo (~40% vazio) e produtos tombados ao centro. Fill rate global estimado em 72%."
+}
+
+=== EXEMPLO 2 — Prateleira em bom estado (status: ok) ===
+Descrição da imagem: Prateleira de talho com produtos bem organizados, etiquetas visíveis, sem espaços vazios.
+{
+  "inspection_id": "INS_20250301_110000_001",
+  "timestamp": "2025-03-01T11:00:00Z",
+  "image_path": "example2.jpg",
+  "zone_id": "Z_S3",
+  "overall_status": "ok",
+  "issues": [],
+  "shelf_fill_rate": 0.95,
+  "products_detected": ["carne de vaca", "frango", "porco", "enchidos"],
+  "model_reasoning": "Todos os níveis bem preenchidos. Produtos correctamente posicionados e etiquetados. Sem anomalias detectadas. Fill rate global estimado em 95%."
+}
+
+=== EXEMPLO 3 — Prateleira crítica (status: critical) ===
+Descrição da imagem: Prateleira de produtos de limpeza com embalagem danificada a verter produto, e 60% da prateleira principal vazia.
+{
+  "inspection_id": "INS_20250301_120000_001",
+  "timestamp": "2025-03-01T12:00:00Z",
+  "image_path": "example3.jpg",
+  "zone_id": "Z_S4",
+  "overall_status": "critical",
+  "issues": [
+    {
+      "issue_id": "ISS_001",
+      "type": "damaged",
+      "location": "prateleira superior, lado direito",
+      "severity": "high",
+      "description": "Embalagem de detergente líquido danificada e a verter conteúdo — risco de segurança e contaminação de produtos adjacentes",
+      "confidence": 0.97,
+      "affected_area_pct": 0.04
+    },
+    {
+      "issue_id": "ISS_002",
+      "type": "empty_shelf",
+      "location": "prateleira principal (nível médio)",
+      "severity": "high",
+      "description": "60% da prateleira principal sem produto — ruptura de stock significativa",
+      "confidence": 0.95,
+      "affected_area_pct": 0.35
+    }
+  ],
+  "shelf_fill_rate": 0.38,
+  "products_detected": ["detergente líquido", "desinfectante"],
+  "model_reasoning": "Prateleira superior com embalagem visivelmente danificada e líquido derramado — severidade alta. Prateleira média com lacuna extensa (~60%). Prateleira inferior relativamente completa. Fill rate global muito baixo (~38%). Status crítico."
+}
+
+=== AGORA ANALISA A IMAGEM FORNECIDA ===
+Produz APENAS o JSON válido, sem texto antes ou depois.
+A imagem é da zona {{ZONE_ID}} — {{ZONE_DESCRIPTION}}.
+
+{
+  "inspection_id": "INS_{{DATETIME}}_001",
+  "timestamp": "{{TIMESTAMP}}",
+  "image_path": "{{IMAGE_PATH}}",
+  "zone_id": "{{ZONE_ID}}",
+  "overall_status": "...",
+  "issues": [...],
+  "shelf_fill_rate": 0.0,
+  "products_detected": [...],
+  "model_reasoning": "..."
+}
