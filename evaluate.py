@@ -1,10 +1,6 @@
 """
 evaluate.py — Harness de avaliação do TP2
 Executa métricas sobre um conjunto de imagens de teste com ground truth.
-
-Uso:
-  python evaluate.py --images-dir test_images/ --output evaluation_report.json
-  python evaluate.py --images-dir test_images/ --gt ground_truth.json --output report.json
 """
 
 import os
@@ -14,6 +10,7 @@ import argparse
 import time
 from pathlib import Path
 from datetime import datetime
+from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
@@ -21,20 +18,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-# ── Métricas de análise visual ─────────────────────────────────────────────
-
 def compute_visual_metrics(predictions: list[dict], ground_truth: list[dict]) -> dict:
-    """
-    Calcula métricas de análise visual.
-
-    Ground truth format:
-    [{"image": "shelf1.jpg", "issues": [{"type": "empty_shelf", "severity": "high", ...}], "fill_rate": 0.6}]
-    """
     total = len(ground_truth)
     if total == 0:
         return {"error": "Ground truth vazio"}
 
-    # Issue Detection Rate (recall)
     tp_issues = 0
     total_gt_issues = 0
     total_pred_issues = 0
@@ -47,13 +35,11 @@ def compute_visual_metrics(predictions: list[dict], ground_truth: list[dict]) ->
 
     for gt in ground_truth:
         img_name = Path(gt["image"]).name
-        # Encontra a predição correspondente
         pred = next((p for p in predictions if Path(p.get("image_path", "")).name == img_name), None)
 
         if pred is None:
             continue
 
-        # JSON Parse Rate
         if "error" not in pred:
             json_parse_successes += 1
 
@@ -62,33 +48,26 @@ def compute_visual_metrics(predictions: list[dict], ground_truth: list[dict]) ->
         total_gt_issues += len(gt_issues)
         total_pred_issues += len(pred_issues)
 
-        # Para cada issue ground truth, verifica se foi detectado
         for gt_iss in gt_issues:
             gt_type = gt_iss.get("type")
-            # Considera detectado se o tipo bate com alguma predição
             matching_pred = next(
                 (p for p in pred_issues if p.get("type") == gt_type), None
             )
             if matching_pred:
                 tp_issues += 1
-                # Severity accuracy
                 if matching_pred.get("severity") == gt_iss.get("severity"):
                     severity_correct += 1
                 severity_total += 1
 
-        # False positive rate: issues preditos que não existem no GT
         for pred_iss in pred_issues:
             pred_type = pred_iss.get("type")
             if not any(g.get("type") == pred_type for g in gt_issues):
                 false_positives += 1
 
-        # Hallucination Rate (heurística: confiança muito alta para issue inexistente)
-        reasoning = pred.get("model_reasoning", "")
         for pred_iss in pred_issues:
             hallucination_total += 1
             pred_type = pred_iss.get("type")
             if not any(g.get("type") == pred_type for g in gt_issues):
-                # Predição sem suporte no GT
                 if pred_iss.get("confidence", 0) > 0.8:
                     hallucinations += 1
 
@@ -109,21 +88,12 @@ def compute_visual_metrics(predictions: list[dict], ground_truth: list[dict]) ->
 
 
 def compute_rag_metrics(queries_with_gt: list[dict], k: int = 3) -> dict:
-    """
-    Calcula Recall@k para o sistema RAG.
-    """
     from rag_memory import evaluate_recall_at_k
     return evaluate_recall_at_k(queries_with_gt, k=k)
 
 
 def compute_rule_metrics(rules_test_cases: list[dict]) -> dict:
-    """
-    Avalia o Rule Engine sobre casos de teste.
-
-    Format: [{"rule_text": "...", "is_ambiguous": bool, "expected_conditions": {...}}]
-    """
     from rule_engine import _call_gemini_text, _extract_json, RULE_CONVERSION_PROMPT
-    import re
 
     parse_successes = 0
     correctness_successes = 0
@@ -147,12 +117,10 @@ def compute_rule_metrics(rules_test_cases: list[dict]) -> dict:
             rule_json = _extract_json(raw)
             parse_successes += 1
 
-            # Verifica ambiguidade
             ambigs = rule_json.get("validation", {}).get("ambiguities", [])
             if is_ambiguous and ambigs:
                 ambiguity_detected += 1
 
-            # Verifica correctness (comparação de condições esperadas)
             expected = tc.get("expected_conditions", {})
             actual = rule_json.get("conditions", {})
             if expected:
@@ -164,12 +132,12 @@ def compute_rule_metrics(rules_test_cases: list[dict]) -> dict:
                 if correct:
                     correctness_successes += 1
             else:
-                correctness_successes += 1  # Sem expected = conta como correcto
+                correctness_successes += 1
 
         except Exception as e:
             print(f"[EVAL] Erro no caso {i}: {e}")
 
-        time.sleep(4)  # Rate limiting
+        time.sleep(4)
 
     return {
         "rule_parse_rate": parse_successes / max(len(rules_test_cases), 1),
@@ -186,17 +154,11 @@ def compute_rule_metrics(rules_test_cases: list[dict]) -> dict:
 
 
 def llm_as_judge(report_md: str, criteria: str) -> dict:
-    """
-    Usa o Gemini Flash como juiz para avaliação qualitativa.
-
-    Returns:
-        {"score": 0.0-1.0, "justification": str, "criteria": str}
-    """
-    from shelf_inspector import _call_gemini_with_backoff
-    import google.generativeai as genai
+    from google import genai
+    from shelf_inspector import _extract_json
 
     api_key = os.getenv("GEMINI_API_KEY")
-    genai.configure(api_key=api_key)
+    client = genai.Client(api_key=api_key)
 
     judge_prompt = f"""Você é um avaliador especializado de sistemas de inteligência de retalho.
 Avalia o seguinte output do sistema com base nos critérios indicados.
@@ -218,11 +180,12 @@ Responde APENAS com JSON válido:
 
 Score de 0.0 (muito fraco) a 1.0 (excelente). Sê honesto e rigoroso."""
 
-    gemini_model = genai.GenerativeModel("gemini-1.5-flash")
     try:
-        response = gemini_model.generate_content(judge_prompt)
-        result = json.loads(response.text.strip())
-        return result
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=judge_prompt
+        )
+        return _extract_json(response.text)
     except Exception as e:
         return {"score": 0.0, "justification": f"Erro: {e}", "criteria": criteria}
 
@@ -234,18 +197,8 @@ def run_full_evaluation(
     strategies: list[str] = None,
     k_rag: int = 3,
 ) -> dict:
-    """
-    Executa o harness completo de avaliação.
-
-    Args:
-        images_dir: Directoria com imagens de teste
-        ground_truth_path: JSON com ground truth (opcional, gera avaliação parcial sem)
-        output_path: Ficheiro de output
-        strategies: Lista de estratégias a avaliar (default: todas)
-        k_rag: k para Recall@k no RAG
-    """
     from shelf_inspector import inspect_image
-    from rag_memory import index_inspection, query
+    from rag_memory import index_inspection
 
     if strategies is None:
         strategies = ["zero_shot", "cot", "few_shot"]
@@ -267,23 +220,20 @@ def run_full_evaluation(
 
     print(f"[Avaliação] {len(images)} imagens encontradas.")
 
-    # Carrega ground truth se disponível
     ground_truth = []
     if ground_truth_path and Path(ground_truth_path).exists():
         with open(ground_truth_path) as f:
             ground_truth = json.load(f)
         print(f"[GT] {len(ground_truth)} ground truth carregados.")
 
-    # ── Fase 1: Inspecção com cada estratégia ─────────────────────────────
     results_by_strategy = {}
 
     for strategy in strategies:
         print(f"\n[Estratégia: {strategy.upper()}]")
         strategy_results = []
 
-        for i, img in enumerate(images[:10]):  # Máx 10 imagens por estratégia
-            zone = "Z_S1"  # Zona default para teste
-            # Infere zona do nome do ficheiro se possível (e.g. "Z_S3_shelf1.jpg")
+        for i, img in enumerate(images[:10]):
+            zone = "Z_S1"
             name = img.stem
             import re
             m = re.search(r'Z_[A-Z]\d+', name)
@@ -294,7 +244,6 @@ def run_full_evaluation(
             try:
                 result = inspect_image(str(img), zone_id=zone, strategy=strategy)
                 strategy_results.append(result)
-                # Indexa no RAG para avaliação do RAG
                 if strategy == "cot":
                     index_inspection(result)
             except Exception as e:
@@ -306,7 +255,6 @@ def run_full_evaluation(
 
         results_by_strategy[strategy] = strategy_results
 
-    # ── Fase 2: Métricas visuais ───────────────────────────────────────────
     print("\n[Métricas] Calculando métricas visuais...")
     visual_metrics = {}
 
@@ -314,7 +262,6 @@ def run_full_evaluation(
         if ground_truth:
             metrics = compute_visual_metrics(preds, ground_truth)
         else:
-            # Sem GT: calcula apenas JSON parse rate e estatísticas
             parse_rate = sum(1 for p in preds if "error" not in p) / max(len(preds), 1)
             avg_issues = sum(len(p.get("issues", [])) for p in preds) / max(len(preds), 1)
             metrics = {
@@ -325,20 +272,17 @@ def run_full_evaluation(
         visual_metrics[strategy] = metrics
         print(f"  {strategy}: JSON parse rate = {metrics.get('json_parse_rate', 0):.0%}")
 
-    # ── Fase 3: Métricas RAG ───────────────────────────────────────────────
     print("\n[RAG] Avaliando Recall@k...")
-    # Queries de teste predefinidas (o aluno deve definir ground truth para as suas inspeções)
     rag_test_queries = [
         {
             "query": "prateleira vazia zona produto",
-            "relevant_ids": []  # Preencher com IDs reais após indexação
+            "relevant_ids": []
         },
         {
             "query": "produto tombado misaligned",
             "relevant_ids": []
         },
     ]
-    # Filtra queries sem ground truth real
     rag_queries_with_gt = [q for q in rag_test_queries if q["relevant_ids"]]
     rag_metrics = {}
     if rag_queries_with_gt:
@@ -348,11 +292,9 @@ def run_full_evaluation(
         rag_metrics = {"note": "Sem ground truth RAG definido para estas imagens"}
         print("  [AVISO] Sem ground truth RAG. Define relevant_ids em rag_test_queries.")
 
-    # ── Fase 4: LLM-as-Judge ──────────────────────────────────────────────
     print("\n[LLM-as-Judge] Avaliando qualidade dos outputs...")
     judge_results = {}
 
-    # Avalia um relatório de exemplo com a estratégia CoT
     cot_results = results_by_strategy.get("cot", [])
     if cot_results:
         from report_generator import generate_inspection_report
@@ -374,7 +316,6 @@ def run_full_evaluation(
             print(f"  Score: {result.get('score', 0):.2f}")
             time.sleep(4)
 
-    # ── Fase 5: Comparação de estratégias ─────────────────────────────────
     strategy_comparison = {}
     for s, metrics in visual_metrics.items():
         strategy_comparison[s] = {
@@ -384,7 +325,6 @@ def run_full_evaluation(
             "severity_accuracy": metrics.get("severity_accuracy", 0),
         }
 
-    # ── Relatório final ────────────────────────────────────────────────────
     evaluation_report = {
         "metadata": {
             "generated_at": datetime.now().isoformat(),
@@ -420,20 +360,14 @@ def run_full_evaluation(
     print(f"Relatório guardado em: {output_path}")
     print(f"{'='*60}")
 
-    # Resumo rápido
     for s, m in visual_metrics.items():
         print(f"  [{s}] JSON parse: {m.get('json_parse_rate', 0):.0%} | "
-              f"Detection: {m.get('issue_detection_rate', 'N/A')} | "
-              f"FP rate: {m.get('false_positive_rate', 'N/A')}")
+              f"Detection: m.get('issue_detection_rate', 'N/A') | "
+              f"FP rate: m.get('false_positive_rate', 'N/A')")
 
     return evaluation_report
 
 
-# ── Tipagem ────────────────────────────────────────────────────────────────
-from typing import Optional
-
-
-# ── Entry point ────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Harness de avaliação — Retail Vision Intelligence TP2"
