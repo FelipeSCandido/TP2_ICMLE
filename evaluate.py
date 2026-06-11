@@ -227,6 +227,7 @@ def run_full_evaluation(
         print(f"[GT] {len(ground_truth)} ground truth carregados.")
 
     results_by_strategy = {}
+    image_to_inspection_id = {}
 
     for strategy in strategies:
         print(f"\n[Estratégia: {strategy.upper()}]")
@@ -244,8 +245,10 @@ def run_full_evaluation(
             try:
                 result = inspect_image(str(img), zone_id=zone, strategy=strategy)
                 strategy_results.append(result)
-                if strategy == "cot":
+                
+                if strategy == "cot" and "error" not in result:
                     index_inspection(result)
+                    image_to_inspection_id[img.name] = result.get("inspection_id")
             except Exception as e:
                 print(f"  [ERRO] {e}")
                 strategy_results.append({"image_path": str(img), "error": str(e)})
@@ -283,6 +286,19 @@ def run_full_evaluation(
             "relevant_ids": []
         },
     ]
+
+    if ground_truth and image_to_inspection_id:
+        for gt in ground_truth:
+            img_name = Path(gt["image"]).name
+            if img_name in image_to_inspection_id:
+                insp_id = image_to_inspection_id[img_name]
+                gt_types = [iss.get("type") for iss in gt.get("issues", [])]
+                
+                if "empty_shelf" in gt_types:
+                    rag_test_queries[0]["relevant_ids"].append(insp_id)
+                if "misaligned" in gt_types:
+                    rag_test_queries[1]["relevant_ids"].append(insp_id)
+
     rag_queries_with_gt = [q for q in rag_test_queries if q["relevant_ids"]]
     rag_metrics = {}
     if rag_queries_with_gt:
@@ -290,7 +306,7 @@ def run_full_evaluation(
         print(f"  Recall@{k_rag} = {rag_metrics.get(f'Recall@{k_rag}', 0):.2f}")
     else:
         rag_metrics = {"note": "Sem ground truth RAG definido para estas imagens"}
-        print("  [AVISO] Sem ground truth RAG. Define relevant_ids em rag_test_queries.")
+        print("  [AVISO] Sem ground truth RAG para as imagens processadas neste lote.")
 
     print("\n[LLM-as-Judge] Avaliando qualidade dos outputs...")
     judge_results = {}
@@ -362,8 +378,8 @@ def run_full_evaluation(
 
     for s, m in visual_metrics.items():
         print(f"  [{s}] JSON parse: {m.get('json_parse_rate', 0):.0%} | "
-              f"Detection: m.get('issue_detection_rate', 'N/A') | "
-              f"FP rate: m.get('false_positive_rate', 'N/A')")
+              f"Detection: {m.get('issue_detection_rate', 'N/A')} | "
+              f"FP rate: {m.get('false_positive_rate', 'N/A')}")
 
     return evaluation_report
 
