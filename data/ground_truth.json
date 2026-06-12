@@ -1,49 +1,81 @@
 [
   {
-    "image": "test2020_212_jpg_rf_zhCRy1XDiv8vksTfFMcq.jpg",
+    "image": "test2020_1032_jpg.rf.cuGpxmhyTkH7Vt00Iy90.jpg",
     "zone_id": "Z_S4",
     "overall_status": "ok",
     "issues": [],
-    "fill_rate": 0.95,
-    "products_detected": ["pasta de dentes", "escovas de dentes"],
-    "notes": "Prateleira de higiene oral muito bem preenchida, produtos organizados e etiquetados"
+    "fill_rate": 0.97,
+    "products_detected": ["pensos higiénicos", "produtos higiene feminina", "SlimGuard", "Sofy"],
+    "notes": "Prateleira de higiene feminina completamente preenchida, produtos organizados em linhas regulares"
   },
   {
-    "image": "test2020_278_jpg_rf_M7mpQ1no0Gps5o86N2rr.jpg",
+    "image": "test2020_1031_jpg.rf.I4wGOt0xDqK5dQg33heD.jpg",
     "zone_id": "Z_S5",
     "overall_status": "ok",
     "issues": [],
     "fill_rate": 0.92,
-    "products_detected": ["refrigerantes", "bebidas energéticas", "sumos", "água"],
-    "notes": "Prateleira refrigerada com bebidas bem organizada e completa"
+    "products_detected": ["bebidas energéticas", "Monster", "Java Monster", "Dunkin Donuts", "NOS", "Gatorade"],
+    "notes": "Secção de bebidas energéticas bem preenchida com grande variedade de marcas"
   },
   {
-    "image": "test2020_381_jpg_rf_NMY7BzfQbTdEE7WnZNHb.jpg",
-    "zone_id": "Z_S4",
+    "image": "test2020_1030_jpg.rf.oY56edVAFOtH6StC30i1.jpg",
+    "zone_id": "Z_S5",
     "overall_status": "warning",
     "issues": [
       {
         "type": "misaligned",
-        "location": "prateleira inferior, lado esquerdo",
+        "location": "prateleira superior, centro-esquerda",
         "severity": "low",
-        "description": "Produtos de skincare desalinhados na prateleira inferior esquerda, algumas embalagens viradas"
+        "description": "Display promocional de produtos de café pendurado verticalmente obstrui visibilidade dos produtos na prateleira de Starbucks"
       }
     ],
     "fill_rate": 0.82,
-    "products_detected": ["skincare", "Garnier", "Olay", "L'Oreal"],
-    "notes": "Secção de cuidados de pele, maioritariamente organizada mas com alguns desalinhamentos"
+    "products_detected": ["café", "Starbucks", "Gevalia", "Coffee Mate", "Cold Brew", "Torani"],
+    "notes": "Secção de café com display de produto a bloquear parcialmente a visibilidade da prateleira"
   },
   {
-    "image": "test2020_428_jpg_rf_NOqahSjdACSM2HFk3ZGM.jpg",
+    "image": "test2020_1028_jpg.rf.k4uEei6sOLl8vnMpTYBp.jpg",
+    "zone_id": "Z_S4",
+    "overall_status": "warning",
+    "issues": [
+      {
+        "type": "wrong_product",
+        "location": "prateleira superior, lado direito",
+        "severity": "medium",
+        "description": "Escovas de dentes Smiclean em display vertical colocadas na secção de pasta dentífrica — violação de planograma"
+      }
+    ],
+    "fill_rate": 0.90,
+    "products_detected": ["pasta de dentes", "Leng Suan Ling", "escovas de dentes", "Smiclean"],
+    "notes": "Secção de higiene oral com escovas de dentes no espaço destinado a pasta"
+  },
+  {
+    "image": "test2020_1027_jpg.rf.tzgXW2XxtNJm08w7F8XD.jpg",
     "zone_id": "Z_S4",
     "overall_status": "ok",
     "issues": [],
-    "fill_rate": 0.90,
-    "products_detected": ["cremes corporais", "Pond's", "produtos de higiene"],
-    "notes": "Prateleira de cuidados corporais bem preenchida e organizada"
+    "fill_rate": 0.93,
+    "products_detected": ["gel de banho", "sabão", "Dial", "Aveeno", "Olay", "Softsoap", "St. Ives", "Ivory"],
+    "notes": "Prateleira de gel de banho e sabão muito bem organizada e preenchida"
   },
   {
-    "image": "test2020_466_jpg_rf_fZquoW3hpvvPlRhmk06C.jpg",
+    "image": "test2020_1025_jpg.rf.KKDCezWLm0Li13Wu5nda.jpg",
+    "zone_id": "Z_S5",
+    "overall_status": "warning",
+    "issues": [
+      {
+        "type": "wrong_product",
+        "location": "prateleira superior, lado direito",
+        "severity": "low",
+        "description": "Palhinhas coloridas e artigos de festa colocados na mesma prateleira que latas de Pepsi — produtos de categoria diferente misturados"
+      }
+    ],
+    "fill_rate": 0.85,
+    "products_detected": ["refrigerantes", "Pepsi", "Mountain Dew", "palhinhas", "artigos de festa"],
+    "notes": "Secção de refrigerantes com produtos não alimentares misturados na prateleira superior"
+  },
+  {
+    "image": "test2020_1024_jpg.rf.5nIW5erSi8R0vgzhXRfM.jpg",
     "zone_id": "Z_S4",
     "overall_status": "warning",
     "issues": [
@@ -51,202 +83,159 @@
         "type": "misaligned",
         "location": "prateleira superior, lado esquerdo",
         "severity": "low",
-        "description": "Produto isolado (balde amarelo) no topo da prateleira fora do planograma esperado"
-      },
-      {
-        "type": "misaligned",
-        "location": "prateleira inferior, centro",
-        "severity": "low",
-        "description": "Produtos de limpeza facial na prateleira inferior com espaçamento irregular entre itens"
+        "description": "Caixa de esponjas Equate colocada horizontalmente em frente de produtos St. Ives, obstruindo etiquetas de preço"
       }
     ],
-    "fill_rate": 0.80,
-    "products_detected": ["Garnier", "Olay", "L'Oreal", "produtos de beleza"],
-    "notes": "Secção de beleza Garnier/Olay/L'Oreal com produto fora de posição no topo"
+    "fill_rate": 0.88,
+    "products_detected": ["gel de banho", "Dial", "Olay", "sabão em barra", "Lever", "Yardley"],
+    "notes": "Secção de higiene pessoal com caixa de produto colocada incorrectamente na prateleira superior"
   },
   {
-    "image": "test2020_725_jpg_rf_N0HOktSy3PHuDSkByvRQ.jpg",
+    "image": "test2020_1023_jpg.rf.1hKxZirY3dzl8OnPWCmU.jpg",
     "zone_id": "Z_S4",
     "overall_status": "ok",
     "issues": [],
-    "fill_rate": 0.97,
-    "products_detected": ["pensos higiénicos", "produtos de higiene feminina"],
-    "notes": "Prateleira de higiene feminina completamente preenchida, produtos bem organizados em linhas"
+    "fill_rate": 0.95,
+    "products_detected": ["pasta de dentes", "Leng Suan Ling", "Colgate", "Leseneng"],
+    "notes": "Prateleira de pasta dentífrica bem organizada e preenchida, produtos em colunas regulares"
   },
   {
-    "image": "test2020_1000_jpg_rf_Fl8q7h4wGZsPMEoFWM3R.jpg",
-    "zone_id": "Z_S4",
-    "overall_status": "warning",
-    "issues": [
-      {
-        "type": "empty_shelf",
-        "location": "prateleira Garnier, lado esquerdo",
-        "severity": "low",
-        "description": "Espaço vazio na prateleira do lado esquerdo da secção Garnier, falta stock"
-      },
-      {
-        "type": "misaligned",
-        "location": "prateleira inferior, centro",
-        "severity": "low",
-        "description": "Alguns produtos na prateleira inferior não estão alinhados com as respectivas etiquetas de preço"
-      }
-    ],
-    "fill_rate": 0.78,
-    "products_detected": ["Garnier", "Olay", "produtos de skincare"],
-    "notes": "Secção de skincare com lacunas visíveis no lado esquerdo"
-  },
-  {
-    "image": "test2020_11_jpg_rf_LR0h2wlBIzKLXdiLUahM.jpg",
-    "zone_id": "Z_S4",
-    "overall_status": "warning",
-    "issues": [
-      {
-        "type": "empty_shelf",
-        "location": "prateleira superior, centro",
-        "severity": "medium",
-        "description": "Prateleira superior central com grande espaço vazio — falta de reposição visível"
-      },
-      {
-        "type": "misaligned",
-        "location": "prateleira trial & travel, múltiplos níveis",
-        "severity": "low",
-        "description": "Produtos de tamanho viagem em posições irregulares, alguns tombados nas prateleiras transparentes"
-      }
-    ],
-    "fill_rate": 0.55,
-    "products_detected": ["produtos trial & travel", "higiene pessoal", "Colgate", "Vaseline"],
-    "notes": "Secção trial & travel com prateleira superior praticamente vazia e organização deficiente"
-  },
-  {
-    "image": "test2020_69_jpg_rf_x43TeyOR0MzH8UdYQHbR.jpg",
+    "image": "test2020_1021_jpg.rf.zjLRVo3TDU6PKE7qdAXI.jpg",
     "zone_id": "Z_S4",
     "overall_status": "warning",
     "issues": [
       {
         "type": "misaligned",
-        "location": "prateleira inferior, lado esquerdo",
+        "location": "prateleira do meio, lado esquerdo",
         "severity": "low",
-        "description": "Produtos de pasta dentífrica na base não alinhados verticalmente, embalagens inclinadas"
+        "description": "Produtos de skincare Olay com orientações mistas — alguns de frente, outros de lado — quebrando uniformidade visual"
       }
     ],
     "fill_rate": 0.85,
-    "products_detected": ["pasta de dentes", "produtos de higiene oral"],
-    "notes": "Prateleira de higiene oral bem preenchida mas com desalinhamento na base"
+    "products_detected": ["skincare", "Olay", "cremes corporais", "produtos de beleza"],
+    "notes": "Secção de skincare com mistura de produtos naturais e Olay, organização inconsistente"
   },
   {
-    "image": "test2020_163_jpg_rf_NrvzWG8jnKDStogA3emb.jpg",
-    "zone_id": "Z_S4",
-    "overall_status": "ok",
-    "issues": [],
-    "fill_rate": 0.93,
-    "products_detected": ["gel de banho", "sabão", "Dove", "Dial", "Nivea", "Old Spice"],
-    "notes": "Prateleira de sabonetes e gel de banho muito bem organizada e preenchida"
-  },
-  {
-    "image": "test2020_387_jpg_rf_AVGerMPMGq0itligzQKN.jpg",
-    "zone_id": "Z_S5",
-    "overall_status": "warning",
-    "issues": [
-      {
-        "type": "empty_shelf",
-        "location": "prateleira inferior, lado direito",
-        "severity": "medium",
-        "description": "Espaços vazios visíveis nas prateleiras inferiores direitas — falta de reposição de bebidas desportivas"
-      }
-    ],
-    "fill_rate": 0.72,
-    "products_detected": ["bebidas desportivas", "Gatorade", "Powerade", "BodyArmor"],
-    "notes": "Secção de bebidas desportivas com ruptura de stock nas prateleiras inferiores"
-  },
-  {
-    "image": "test2020_457_jpg_rf_f3bYcmZtan7TRluuSS2u.jpg",
-    "zone_id": "Z_S5",
-    "overall_status": "critical",
-    "issues": [
-      {
-        "type": "empty_shelf",
-        "location": "prateleira do meio, centro",
-        "severity": "high",
-        "description": "Prateleira do meio com grande secção completamente vazia — apenas um produto isolado restante"
-      }
-    ],
-    "fill_rate": 0.45,
-    "products_detected": ["comida para gatos", "Fancy Feast"],
-    "notes": "Secção de comida para gatos com ruptura crítica de stock na prateleira do meio"
-  },
-  {
-    "image": "test2020_494_jpg_rf_fCBYFYEfBhPNsJC74TAR.jpg",
-    "zone_id": "Z_S5",
-    "overall_status": "ok",
-    "issues": [],
-    "fill_rate": 0.91,
-    "products_detected": ["bebidas energéticas", "Red Bull", "Monster", "Rockstar"],
-    "notes": "Secção de bebidas energéticas bem organizada e preenchida"
-  },
-  {
-    "image": "test2020_558_jpg_rf_w0e1B7D3jLQt52au4jPu.jpg",
+    "image": "test2020_1020_jpg.rf.zTXlfA7LQ07nu2ZHj2XG.jpg",
     "zone_id": "Z_S5",
     "overall_status": "ok",
     "issues": [],
     "fill_rate": 0.94,
-    "products_detected": ["refrigerantes", "sumos", "cola", "caixas de bebidas"],
-    "notes": "Corredor de refrigerantes muito bem preenchido com grande variedade de produtos"
+    "products_detected": ["bebidas desportivas", "Gatorade"],
+    "notes": "Prateleira de Gatorade muito bem preenchida com alinhamento perfeito de garrafas por cor"
   },
   {
-    "image": "test2020_574_jpg_rf_CSyckiXJes5fdBkG7WxE.jpg",
+    "image": "test2020_1019_jpg.rf.MuUyXhRWxOV8DUCm0Im3.jpg",
     "zone_id": "Z_S4",
     "overall_status": "warning",
     "issues": [
       {
         "type": "misaligned",
-        "location": "prateleira do meio, centro-direita",
+        "location": "prateleira superior, lado direito",
         "severity": "low",
-        "description": "Produtos de face care com embalagens de diferentes tamanhos misturadas, desorganização visual"
-      }
-    ],
-    "fill_rate": 0.83,
-    "products_detected": ["face care", "skincare", "produtos de beleza"],
-    "notes": "Secção de cuidados faciais com mix de produtos de diferentes tamanhos sem organização clara"
-  },
-  {
-    "image": "test2020_657_jpg_rf_LOU57kOqvQ2Mx6nOyg4b.jpg",
-    "zone_id": "Z_S4",
-    "overall_status": "warning",
-    "issues": [
-      {
-        "type": "misaligned",
-        "location": "múltiplas prateleiras, lado direito",
-        "severity": "low",
-        "description": "Produtos de skincare no lado direito com espaçamento irregular e alguns itens avançados para fora da linha da prateleira"
-      }
-    ],
-    "fill_rate": 0.80,
-    "products_detected": ["Olay", "L'Oreal", "Nivea", "Simple", "skincare"],
-    "notes": "Secção de beleza com produtos desalinhados no lado direito"
-  },
-  {
-    "image": "test2020_880_jpg_rf_xzRz665HDrleNlBYT9qt.jpg",
-    "zone_id": "Z_S4",
-    "overall_status": "warning",
-    "issues": [
-      {
-        "type": "wrong_product",
-        "location": "prateleira superior, centro",
-        "severity": "medium",
-        "description": "Produto de categoria diferente (escovas de dentes em display vertical) colocado na área de pasta dentífrica — possível violação de planograma"
+        "description": "Produtos de higiene feminina no canto superior direito com espaçamentos irregulares entre embalagens"
       }
     ],
     "fill_rate": 0.88,
-    "products_detected": ["pasta de dentes", "Colgate", "Darlie", "escovas de dentes"],
-    "notes": "Secção de higiene oral com display de escovas colocado numa área predominantemente de pasta"
+    "products_detected": ["pensos higiénicos", "Always", "produtos higiene feminina"],
+    "notes": "Secção de higiene feminina com pequenas irregularidades no alinhamento superior direito"
   },
   {
-    "image": "test2020_927_jpg_rf_th62ASoNahqrX9RH14f7.jpg",
-    "zone_id": "Z_S5",
+    "image": "test2020_1018_jpg.rf.dy9C36UZ0KveGsz9YKAG.jpg",
+    "zone_id": "Z_S4",
+    "overall_status": "critical",
+    "issues": [
+      {
+        "type": "empty_shelf",
+        "location": "múltiplas prateleiras, lado esquerdo",
+        "severity": "high",
+        "description": "Várias prateleiras do lado esquerdo com lacunas significativas — múltiplas posições vazias em medicamentos OTC"
+      }
+    ],
+    "fill_rate": 0.48,
+    "products_detected": ["medicamentos OTC", "Nurofen", "Clarityn", "Calpol", "Zovirax"],
+    "notes": "Secção de medicamentos com ruptura crítica de stock em múltiplas prateleiras"
+  },
+  {
+    "image": "test2020_1017_jpg.rf.yteZzkkWRxnBRI5gWwDN.jpg",
+    "zone_id": "Z_S4",
     "overall_status": "ok",
     "issues": [],
-    "fill_rate": 0.89,
-    "products_detected": ["café", "Starbucks", "Monster Java", "chá", "syrup Torani"],
-    "notes": "Secção de café e chá bem preenchida com boa variedade de produtos"
+    "fill_rate": 0.93,
+    "products_detected": ["skincare", "Nivea", "produtos de limpeza facial", "CATE"],
+    "notes": "Prateleira de skincare Nivea muito bem organizada com produtos alinhados e etiquetados"
+  },
+  {
+    "image": "test2020_1015_jpg.rf.ElqgakvzJTh2ngEsbm6X.jpg",
+    "zone_id": "Z_S4",
+    "overall_status": "warning",
+    "issues": [
+      {
+        "type": "misaligned",
+        "location": "prateleira inferior, centro",
+        "severity": "low",
+        "description": "Produtos de higiene feminina no display central com embalagens de diferentes tamanhos misturadas sem organização clara por tipo"
+      }
+    ],
+    "fill_rate": 0.80,
+    "products_detected": ["pensos higiénicos", "produtos higiene feminina"],
+    "notes": "Display central de higiene feminina com mix de tamanhos sem separação visual clara"
+  },
+  {
+    "image": "test2020_1014_jpg.rf.PSM0EHgFtTxIKJbDQLc2.jpg",
+    "zone_id": "Z_S4",
+    "overall_status": "critical",
+    "issues": [
+      {
+        "type": "empty_shelf",
+        "location": "múltiplas prateleiras, centro",
+        "severity": "high",
+        "description": "Prateleira central de medicamentos com grande área vazia — apenas alguns produtos isolados visíveis em múltiplos níveis"
+      }
+    ],
+    "fill_rate": 0.40,
+    "products_detected": ["medicamentos", "Ibuprofen", "analgésicos"],
+    "notes": "Secção de medicamentos com ruptura crítica de stock — fill rate muito baixo"
+  },
+  {
+    "image": "test2020_1013_jpg.rf.2WhMf77pJPlk9ojKnEpk.jpg",
+    "zone_id": "Z_S4",
+    "overall_status": "warning",
+    "issues": [
+      {
+        "type": "misaligned",
+        "location": "prateleira do meio, lado esquerdo",
+        "severity": "medium",
+        "description": "Produto isolado sobressai horizontalmente para fora da grelha da prateleira, obstruindo o corredor de passagem"
+      }
+    ],
+    "fill_rate": 0.85,
+    "products_detected": ["pensos higiénicos", "produtos higiene feminina", "Always"],
+    "notes": "Secção de higiene feminina com produto a bloquear passagem no nível do meio"
+  },
+  {
+    "image": "test2020_1012_jpg.rf.lIeTZ0fSadnXdzxElZfi.jpg",
+    "zone_id": "Z_S4",
+    "overall_status": "ok",
+    "issues": [],
+    "fill_rate": 0.94,
+    "products_detected": ["pasta de dentes", "Shu Ke", "Darlie", "Colgate", "higiene oral"],
+    "notes": "Prateleira de higiene oral muito bem preenchida com linhas regulares e produtos bem alinhados"
+  },
+  {
+    "image": "test2020_1011_jpg.rf.RnEcnfMJbA4uK9d6ALD3.jpg",
+    "zone_id": "Z_S4",
+    "overall_status": "warning",
+    "issues": [
+      {
+        "type": "misaligned",
+        "location": "prateleira inferior, lado direito",
+        "severity": "low",
+        "description": "Embalagem de Colgate tombada na prateleira inferior lado direito, produto não na posição vertical correcta"
+      }
+    ],
+    "fill_rate": 0.88,
+    "products_detected": ["pasta de dentes", "Shu Ke Plus", "Darlie", "Colgate"],
+    "notes": "Secção de higiene oral com produto tombado no canto inferior direito"
   }
 ]

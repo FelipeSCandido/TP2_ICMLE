@@ -35,7 +35,13 @@ def compute_visual_metrics(predictions: list[dict], ground_truth: list[dict]) ->
 
     for gt in ground_truth:
         img_name = Path(gt["image"]).name
-        pred = next((p for p in predictions if Path(p.get("image_path", "")).name == img_name), None)
+        img_stem = Path(gt["image"]).stem
+        pred = next(
+            (p for p in predictions
+             if Path(p.get("image_path", "")).name == img_name
+             or Path(p.get("image_path", "")).stem == img_stem),
+            None
+        )
 
         if pred is None:
             continue
@@ -154,11 +160,11 @@ def compute_rule_metrics(rules_test_cases: list[dict]) -> dict:
 
 
 def llm_as_judge(report_md: str, criteria: str) -> dict:
-    from google import genai
+    import google.generativeai as genai
     from shelf_inspector import _extract_json
 
     api_key = os.getenv("GEMINI_API_KEY")
-    client = genai.Client(api_key=api_key)
+    genai.configure(api_key=api_key)
 
     judge_prompt = f"""Você é um avaliador especializado de sistemas de inteligência de retalho.
 Avalia o seguinte output do sistema com base nos critérios indicados.
@@ -181,10 +187,8 @@ Responde APENAS com JSON válido:
 Score de 0.0 (muito fraco) a 1.0 (excelente). Sê honesto e rigoroso."""
 
     try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=judge_prompt
-        )
+        judge_model = genai.GenerativeModel("gemini-1.5-flash")
+        response = judge_model.generate_content(judge_prompt)
         return _extract_json(response.text)
     except Exception as e:
         return {"score": 0.0, "justification": f"Erro: {e}", "criteria": criteria}
@@ -233,7 +237,7 @@ def run_full_evaluation(
         print(f"\n[Estratégia: {strategy.upper()}]")
         strategy_results = []
 
-        for i, img in enumerate(images[:10]):
+        for i, img in enumerate(images[:18]):
             zone = "Z_S1"
             name = img.stem
             import re
@@ -344,7 +348,7 @@ def run_full_evaluation(
     evaluation_report = {
         "metadata": {
             "generated_at": datetime.now().isoformat(),
-            "images_evaluated": len(images[:10]),
+            "images_evaluated": len(images[:18]),
             "strategies_evaluated": strategies,
             "k_rag": k_rag,
             "has_ground_truth": bool(ground_truth),

@@ -1,6 +1,7 @@
 import os
 import json
 import re
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -57,21 +58,19 @@ Notas:
 """
 
 
-def _call_gemini_text(prompt: str, model_name: str = "gemini-2.5-flash") -> str:
-    from google import genai
+def _call_gemini_text(prompt: str, model_name: str = "gemini-1.5-flash") -> str:
+    import google.generativeai as genai
 
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY não definida.")
-    
-    client = genai.Client(api_key=api_key)
+
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel(model_name)
 
     for attempt in range(4):
         try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=prompt,
-            )
+            response = model.generate_content(prompt)
             return response.text
         except Exception as e:
             if "429" in str(e) and attempt < 3:

@@ -90,26 +90,23 @@ def _extract_json(text: str) -> dict:
 def _call_gemini_with_backoff(client, model_name: str, prompt: str,
                                image_data: str, media_type: str,
                                max_retries: int = 4) -> str:
-    from google import genai
-    from google.genai import types
+    import google.generativeai as genai
 
     if client is None:
-        client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        api_key = os.getenv("GEMINI_API_KEY")
+        genai.configure(api_key=api_key)
 
+    model = genai.GenerativeModel(model_name)
     contents = [
-        types.Part.from_bytes(
-            data=base64.b64decode(image_data),
-            mime_type=media_type
-        ),
-        prompt
+        {"parts": [
+            {"inline_data": {"mime_type": media_type, "data": image_data}},
+            {"text": prompt}
+        ]}
     ]
 
     for attempt in range(max_retries):
         try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=contents
-            )
+            response = model.generate_content(contents)
             return response.text
         except Exception as e:
             err_str = str(e)
@@ -130,17 +127,18 @@ def inspect_image(
     image_path: str,
     zone_id: str = "Z_S1",
     strategy: str = "cot",  
-    model_name: str = "gemini-2.5-flash",
+    model_name: str = "gemini-1.5-flash",
     force_refresh: bool = False,
 ) -> dict:
     """Analisa uma imagem de prateleira."""
-    from google import genai
+    import google.generativeai as genai
 
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY não definida. Copia .env.example para .env e preenche.")
 
-    client = genai.Client(api_key=api_key)
+    genai.configure(api_key=api_key)
+    client = None  # usado apenas para passar ao backoff
 
     img_path = Path(image_path)
     if not img_path.exists():
