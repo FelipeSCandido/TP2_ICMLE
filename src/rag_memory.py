@@ -244,7 +244,7 @@ Resposta concisa e directa em português (máx. 150 palavras):"""
 
     api_key = os.getenv("GEMINI_API_KEY")
     genai.configure(api_key=api_key)
-    gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+    gemini_model = genai.GenerativeModel("gemini-2.5-flash-lite")
 
     try:
         response = gemini_model.generate_content(synthesis_prompt)

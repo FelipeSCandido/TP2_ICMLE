@@ -1,0 +1,483 @@
+{
+  "metadata": {
+    "generated_at": "2026-06-12T03:17:20.395776",
+    "images_evaluated": 18,
+    "strategies_evaluated": [
+      "zero_shot",
+      "cot",
+      "few_shot"
+    ],
+    "k_rag": 3,
+    "has_ground_truth": true
+  },
+  "visual_metrics_by_strategy": {
+    "zero_shot": {
+      "issue_detection_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "severity_accuracy": 0.0,
+      "json_parse_rate": 0.0,
+      "hallucination_rate": 0.0,
+      "totals": {
+        "images": 18,
+        "gt_issues": 6,
+        "pred_issues": 0,
+        "true_positives": 0,
+        "false_positives": 0
+      }
+    },
+    "cot": {
+      "issue_detection_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "severity_accuracy": 0.0,
+      "json_parse_rate": 0.0,
+      "hallucination_rate": 0.0,
+      "totals": {
+        "images": 18,
+        "gt_issues": 6,
+        "pred_issues": 0,
+        "true_positives": 0,
+        "false_positives": 0
+      }
+    },
+    "few_shot": {
+      "issue_detection_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "severity_accuracy": 0.0,
+      "json_parse_rate": 0.0,
+      "hallucination_rate": 0.0,
+      "totals": {
+        "images": 18,
+        "gt_issues": 6,
+        "pred_issues": 0,
+        "true_positives": 0,
+        "false_positives": 0
+      }
+    }
+  },
+  "strategy_comparison": {
+    "zero_shot": {
+      "json_parse_rate": 0.0,
+      "issue_detection_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "severity_accuracy": 0.0
+    },
+    "cot": {
+      "json_parse_rate": 0.0,
+      "issue_detection_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "severity_accuracy": 0.0
+    },
+    "few_shot": {
+      "json_parse_rate": 0.0,
+      "issue_detection_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "severity_accuracy": 0.0
+    }
+  },
+  "rag_metrics": {
+    "note": "Sem ground truth RAG definido para estas imagens"
+  },
+  "llm_judge_results": {
+    "Clareza e accionabilidade das recomendações (são e": {
+      "score": 0.0,
+      "justification": "Erro: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.",
+      "criteria": "Clareza e accionabilidade das recomendações (são específicas e executáveis sem interpretação adicional?)"
+    },
+    "Precisão das descrições de issues (as descrições s": {
+      "score": 0.0,
+      "justification": "Erro: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.",
+      "criteria": "Precisão das descrições de issues (as descrições são concretas e baseadas em observações visuais?)"
+    },
+    "Qualidade do sumário executivo (é conciso, directo": {
+      "score": 0.0,
+      "justification": "Erro: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.",
+      "criteria": "Qualidade do sumário executivo (é conciso, directo e útil para um gestor de loja?)"
+    }
+  },
+  "raw_results": {
+    "zero_shot": [
+      {
+        "image": "data\\images\\test2020_1000_jpg.rf.Fl8q7h4wGZsPMEoFWM3R.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1001_jpg.rf.4IKJCZvWCni6WbVyiCwp.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1002_jpg.rf.dIMeDVODOdPRwYGvYyEi.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1003_jpg.rf.4qRpkDBt0NR6Ta0JvbLM.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1004_jpg.rf.UhQBXMkkH6WDImr1iadj.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1006_jpg.rf.u7rHRHN8nEP3cVhTKtby.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1007_jpg.rf.skX6ZV8wv1jucr0JZw1W.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1008_jpg.rf.uOoMpgUE0PP2zjRc4IEJ.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1010_jpg.rf.PeuWv27qBo6wiYwC88XZ.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1011_jpg.rf.RnEcnfMJbA4uK9d6ALD3.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1012_jpg.rf.lIeTZ0fSadnXdzxElZfi.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1013_jpg.rf.2WhMf77pJPlk9ojKnEpk.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1014_jpg.rf.PSM0EHgFtTxIKJbDQLc2.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1015_jpg.rf.ElqgakvzJTh2ngEsbm6X.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1017_jpg.rf.yteZzkkWRxnBRI5gWwDN.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1018_jpg.rf.dy9C36UZ0KveGsz9YKAG.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1019_jpg.rf.MuUyXhRWxOV8DUCm0Im3.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_101_jpg.rf.msymzGSytwqEIr7rugh5.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      }
+    ],
+    "cot": [
+      {
+        "image": "data\\images\\test2020_1000_jpg.rf.Fl8q7h4wGZsPMEoFWM3R.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1001_jpg.rf.4IKJCZvWCni6WbVyiCwp.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1002_jpg.rf.dIMeDVODOdPRwYGvYyEi.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1003_jpg.rf.4qRpkDBt0NR6Ta0JvbLM.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1004_jpg.rf.UhQBXMkkH6WDImr1iadj.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1006_jpg.rf.u7rHRHN8nEP3cVhTKtby.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1007_jpg.rf.skX6ZV8wv1jucr0JZw1W.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1008_jpg.rf.uOoMpgUE0PP2zjRc4IEJ.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1010_jpg.rf.PeuWv27qBo6wiYwC88XZ.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1011_jpg.rf.RnEcnfMJbA4uK9d6ALD3.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1012_jpg.rf.lIeTZ0fSadnXdzxElZfi.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1013_jpg.rf.2WhMf77pJPlk9ojKnEpk.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1014_jpg.rf.PSM0EHgFtTxIKJbDQLc2.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1015_jpg.rf.ElqgakvzJTh2ngEsbm6X.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1017_jpg.rf.yteZzkkWRxnBRI5gWwDN.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1018_jpg.rf.dy9C36UZ0KveGsz9YKAG.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1019_jpg.rf.MuUyXhRWxOV8DUCm0Im3.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_101_jpg.rf.msymzGSytwqEIr7rugh5.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      }
+    ],
+    "few_shot": [
+      {
+        "image": "data\\images\\test2020_1000_jpg.rf.Fl8q7h4wGZsPMEoFWM3R.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1001_jpg.rf.4IKJCZvWCni6WbVyiCwp.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1002_jpg.rf.dIMeDVODOdPRwYGvYyEi.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1003_jpg.rf.4qRpkDBt0NR6Ta0JvbLM.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1004_jpg.rf.UhQBXMkkH6WDImr1iadj.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1006_jpg.rf.u7rHRHN8nEP3cVhTKtby.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1007_jpg.rf.skX6ZV8wv1jucr0JZw1W.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1008_jpg.rf.uOoMpgUE0PP2zjRc4IEJ.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1010_jpg.rf.PeuWv27qBo6wiYwC88XZ.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1011_jpg.rf.RnEcnfMJbA4uK9d6ALD3.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1012_jpg.rf.lIeTZ0fSadnXdzxElZfi.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1013_jpg.rf.2WhMf77pJPlk9ojKnEpk.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1014_jpg.rf.PSM0EHgFtTxIKJbDQLc2.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1015_jpg.rf.ElqgakvzJTh2ngEsbm6X.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1017_jpg.rf.yteZzkkWRxnBRI5gWwDN.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1018_jpg.rf.dy9C36UZ0KveGsz9YKAG.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_1019_jpg.rf.MuUyXhRWxOV8DUCm0Im3.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      },
+      {
+        "image": "data\\images\\test2020_101_jpg.rf.msymzGSytwqEIr7rugh5.jpg",
+        "status": null,
+        "fill_rate": null,
+        "n_issues": 0,
+        "json_valid": false
+      }
+    ]
+  }
+}
